@@ -1,1 +1,1 @@
-# clifford-group-equivariant-simplicial-transformers
+Clifford Group Equivariant Simplical Transformers
