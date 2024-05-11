@@ -12,3 +12,16 @@ If you need to include an appendix you can in either a pdf format or additional 
 
 
 https://docs.google.com/document/d/10J2uMx7BlMXPFanOmu4zSeC6E30iOGfWkjk7-a7RnM4/edit?usp=sharing 
+
+
+## Introduction 
+
+### Preliminaries
+
+## Main Architecture
+
+## Methodology
+
+## Results
+
+## Conclusion
