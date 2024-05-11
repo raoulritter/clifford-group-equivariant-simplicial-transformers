@@ -9,3 +9,6 @@ Results of your work (link that part with the code in the jupyter notebook)
 Conclude
 Close the notebook with a description of each student's contribution.
 If you need to include an appendix you can in either a pdf format or additional Appendix chapter in your blog. That extra material should be only related to supplementary experiments or clarification and not core information about the project.
+
+
+https://docs.google.com/document/d/10J2uMx7BlMXPFanOmu4zSeC6E30iOGfWkjk7-a7RnM4/edit?usp=sharing 
