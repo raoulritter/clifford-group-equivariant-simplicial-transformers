@@ -1,3 +1,7 @@
+""""
+This code is from David Ruhe's Clifford Group Equivariant Neural Networks repository:
+https://github.com/DavidRuhe/clifford-group-equivariant-neural-networks
+"""
 import math
 
 import torch
