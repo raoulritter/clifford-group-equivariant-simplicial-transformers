@@ -168,6 +168,7 @@ class SelfAttentionClifford(nn.Module):
         self.k_linear = MVLinear(algebra, num_feat, 1, subspaces=True)
         self.v_linear = MVLinear(algebra, num_feat, 1, subspaces=True)
         self.output_embedding = MVLinear(algebra, 1*2, num_feat, subspaces=True)
+        self.concat_layernorm = MVLayerNorm(algebra, 2)
 
     def forward(self, feature_matrix):
         bs = feature_matrix.size(0)//25
@@ -194,7 +195,10 @@ class SelfAttentionClifford(nn.Module):
         gp_feature_matrix = self.geometric_product(attention_feature_matrix, attention_feature_matrix)
 
         concat_feature_matrix = torch.cat((attention_feature_matrix, gp_feature_matrix), dim=1)
-        embed_output = self.output_embedding(concat_feature_matrix)
+        normalized_concat_feature_matrix = self.concat_layernorm(concat_feature_matrix)
+        embed_output = self.output_embedding(normalized_concat_feature_matrix)
+
+        # embed_output = self.output_embedding(concat_feature_matrix)
 
         return embed_output
 
@@ -232,12 +236,20 @@ class NBODY_Transformer(nn.Module):
         self.positional_encoding = PositionalEncoding(d_model, batch_size)
         self.GAST = GAST(num_layers, d_model, num_heads, clifford_algebra, channels)
         self.embedding = MVLinear(clifford_algebra, embed_in_features, embed_out_features, subspaces=False)
+        self.MVinput = MVLinear(clifford_algebra, input_dim, d_model, subspaces=True)
+        self.MVGP = MVLinear(clifford_algebra, d_model *2, d_model, subspaces=True)
 
     def forward(self, nodes_in_clifford, edges_in_clifford, src_mask, batch_size):
 
         # POSITIONAL ENCODING left out for now
         # edges_in_clifford = self.positional_encoding(edges_in_clifford)
         src = torch.cat((nodes_in_clifford, edges_in_clifford), dim=0)
+        src_MV = self.MVinput(src)
+        src_GP = clifford_algebra.geometric_product(src_MV, src_MV)
+
+        src_cat = torch.cat((src_MV, src_GP), dim=1)
+
+        src = self.MVGP(src_cat)
 
         enc_output = self.GAST(src, src_mask)
         output = enc_output
@@ -247,7 +259,7 @@ class NBODY_Transformer(nn.Module):
 
 # Hyperparameters
 input_dim = 7  # feature_dim
-d_model = 512
+d_model = 7
 num_heads = 8
 num_layers = 6
 embed_in_features = 3
