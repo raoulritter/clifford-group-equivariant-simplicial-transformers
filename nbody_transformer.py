@@ -107,6 +107,8 @@ def embed_nbody_graphs(batch):
     loc_end_clifford = clifford_algebra.embed(loc_end, (1, 2, 3))
 
     return full_node_embedding, full_edge_embedding, loc_end_clifford, attention_mask
+
+
 def generate_mock_batch(batch_size):
     """
     Generate a mock batch of data with specified shapes.
