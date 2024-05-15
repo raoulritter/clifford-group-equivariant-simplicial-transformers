@@ -159,46 +159,46 @@ class PositionalEncoding(nn.Module):
 #     return output, attn
 
 
-# class SelfAttentionClifford(nn.Module):
-#     def __init__(self, num_feat, num_nodes, num_edges, algebra):
-#         super(SelfAttentionClifford, self).__init__()
-#         self.num_feat = num_feat
-#         self.num_nodes = num_nodes
-#         self.num_edges = num_edges
-#         self.algebra = algebra
-#         self.q_linear = nn.Linear(num_feat, num_feat)
-#         self.k_linear = nn.Linear(num_feat, num_feat)
-#         self.v_linear = nn.Linear(num_feat, num_feat)
-#
-#     def forward(self, feature_matrix):
-#         bs = feature_matrix.size(0)
-#
-#         # Reshape feature matrix
-#         feature_matrix = feature_matrix.view(bs, -1, 8)  # (bs, num_feat, 8) -> (bs, num_feat*8)
-#
-#         # Compute query, key, and value matrices
-#         q = self.q_linear(feature_matrix)
-#         k = self.k_linear(feature_matrix)
-#         v = self.v_linear(feature_matrix)
-#
-#         # Compute dot product for attention
-#         attn = torch.bmm(q, k.transpose(1, 2))  # (bs*(num_nodes + num_edges), num_feat, 8)
-#         attn = F.softmax(attn, dim=-1)
-#
-#         # Apply attention to the value
-#         updated_feature_matrix = torch.bmm(attn, v)  # (bs*(num_nodes + num_edges), num_feat*8)
-#
-#         # Apply geometric product
-#         updated_feature_matrix = self.geometric_product(updated_feature_matrix, updated_feature_matrix)
-#
-#         # Update feature matrix with the new values
-#         feature_matrix = updated_feature_matrix.view(bs, self.num_nodes + self.num_edges, self.num_feat, 8)
-#
-#         return feature_matrix
-#
-#     def geometric_product(self, a, b):
-#         # This function implements the geometric product as defined in your algebra
-#         return self.algebra.geometric_product(a, b)
+class SelfAttentionClifford(nn.Module):
+    def __init__(self, num_feat, num_nodes, num_edges, algebra):
+        super(SelfAttentionClifford, self).__init__()
+        self.num_feat = num_feat
+        self.num_nodes = num_nodes
+        self.num_edges = num_edges
+        self.algebra = algebra
+        self.q_linear = nn.Linear(num_feat, num_feat)
+        self.k_linear = nn.Linear(num_feat, num_feat)
+        self.v_linear = nn.Linear(num_feat, num_feat)
+
+    def forward(self, feature_matrix):
+        bs = feature_matrix.size(0)
+
+        # Reshape feature matrix
+        feature_matrix = feature_matrix.view(bs, -1, 8)  # (bs, num_feat, 8) -> (bs, num_feat*8)
+
+        # Compute query, key, and value matrices
+        q = self.q_linear(feature_matrix)
+        k = self.k_linear(feature_matrix)
+        v = self.v_linear(feature_matrix)
+
+        # Compute dot product for attention
+        attn = torch.bmm(q, k.transpose(1, 2))  # (bs*(num_nodes + num_edges), num_feat, 8)
+        attn = F.softmax(attn, dim=-1)
+
+        # Apply attention to the value
+        updated_feature_matrix = torch.bmm(attn, v)  # (bs*(num_nodes + num_edges), num_feat*8)
+
+        # Apply geometric product
+        updated_feature_matrix = self.geometric_product(updated_feature_matrix, updated_feature_matrix)
+
+        # Update feature matrix with the new values
+        feature_matrix = updated_feature_matrix.view(bs, self.num_nodes + self.num_edges, self.num_feat, 8)
+
+        return feature_matrix
+
+    def geometric_product(self, a, b):
+        # This function implements the geometric product as defined in your algebra
+        return self.algebra.geometric_product(a, b)
 
 
 # class GAST_block(nn.Module):
@@ -218,7 +218,7 @@ class GAST_block(nn.Module):
         # self.mvlayernorm = (clifford_algebra, channels)
         # self.mvlayernorm2
         self.self_attn = SelfAttentionClifford(d_model, 5, 20, clifford_algebra)
-        # self.mvlayernorm2 = MVLayerNorm(clifford_algebra, channels)
+        self.mvlayernorm2 = MVLayerNorm(clifford_algebra, channels)
         # self.mvlayernorm2 = (clifford_algebra, channels)
 
         in_features = d_model  # or another relevant dimension
@@ -264,11 +264,11 @@ class GAST(nn.Module):
         super(GAST, self).__init__()
         self.layers = nn.ModuleList(
             [GAST_block(d_model, num_heads, clifford_algebra, channels) for _ in range(num_layers)])
-        self.norm = nn.LayerNorm(d_model)
+        # self.norm = nn.LayerNorm(d_model)
     def forward(self, src, src_mask=None):
         for layer in self.layers:
             src = layer(src, src_mask)
-        return self.norm(src)
+        return src
 
 class NBODY_Transformer(nn.Module):
     def __init__(self, input_dim, d_model, num_heads, num_layers, mv_in_features, mv_out_features, clifford_algebra, channels):
@@ -295,10 +295,13 @@ class NBODY_Transformer(nn.Module):
         enc_output = self.GAST(src, src_mask)
 
         # LATER FIXEN
-        output = self.fc(enc_output)
+        # output = self.fc(enc_output)
+        #Return only the first 5 values
+        output = enc_output
 
+        return output[:5, :, :]
 
-        return output
+        # return output
 
 # Hyperparameters
 input_dim = 8  # feature_dim
@@ -330,6 +333,7 @@ for epoch in range(10):
     edges_in_clifford = torch.cat((extra_edge_attr_clifford, orig_edge_attr_clifford), dim=1)
     tgt = loc_end
 
+    tgt_clifford = clifford_algebra.embed(tgt, (1, 2, 5))
     output = model(nodes_in_clifford, edges_in_clifford, src_mask, batch_size)
 
 
@@ -339,7 +343,7 @@ for epoch in range(10):
     #node in cliffore
 
     # originele locatie nog optellen bij prediction en dan dat vergelijken!!
-    loss = criterion(output, tgt)
+    loss = criterion(output, tgt_clifford)
     loss.backward()
     optimizer.step()
     print(f'Epoch {epoch + 1}, Loss: {loss.item()}')
