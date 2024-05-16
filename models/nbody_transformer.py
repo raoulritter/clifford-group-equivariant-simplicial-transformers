@@ -47,16 +47,16 @@ class NBodyTransformer(nn.Module):
 
         # TODO: FIX THIS RESHAPE output is now [batch_size * (n_nodes + edges), d_model, 8]
         output = output.view(batch_size, -1, self.d_model, 8)
+    
 
         # now of every 25, we only want the first 5
         node_features = output[:, :n_nodes, :, :] # [batch_size, n_nodes, d_model, 8]
 
         # now we only want the position vector HOW DO WE DO THIS
+        positions = node_features[:, :, :1, :]  # [batch_size, n_nodes, 8]
+        positions = positions.view(batch_size, -1, 8)
 
-        print(node_features.size())
-        print(og_locations.size())
-
-
-        output =  og_locations + output[:(5 * batch_size), 1, :]
+        output =  og_locations + positions
+        loc_end_clifford = loc_end_clifford.view(batch_size, -1, 8) # IS THIS NEEDED OR RESHAPE THE OTHER ONE?
 
         return output, loc_end_clifford
