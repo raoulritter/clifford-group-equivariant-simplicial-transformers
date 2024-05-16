@@ -51,8 +51,10 @@ class NBodyTransformer(nn.Module):
         # now of every 25, we only want the first 5
         node_features = output[:, :n_nodes, :, :] # [batch_size, n_nodes, d_model, 8]
 
+        # now we only want the position vector HOW DO WE DO THIS
+
         print(node_features.size())
-        
+        print(og_locations.size())
 
 
         output =  og_locations + output[:(5 * batch_size), 1, :]
