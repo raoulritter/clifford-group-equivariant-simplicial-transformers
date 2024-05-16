@@ -32,11 +32,11 @@ class NBodyTransformer(nn.Module):
         combined_gp = self.clifford_algebra.geometric_product(combined, combined)  # do we also for edges?
         #edges = self.clifford_algebra.geometric_product(edge_embeddings, edge_embeddings)
 
-        soc_cat = torch.cat((combined, combined_gp), dim=1)
+        src_cat = torch.cat((combined, combined_gp), dim=1)
         # Combine nodes and edges after projection
 
         #nodes = torch.cat((nodes, edge_embeddings), dim=0)
-        src = self.combined_projection(soc_cat) # check shapes
+        src = self.combined_projection(src_cat) # check shapes
 
         # src -> [batch_size * (n_nodes + n_edges), d_model, 8]
 
@@ -45,8 +45,15 @@ class NBodyTransformer(nn.Module):
         # src -> [batch_size * (n_nodes + n_edges), d_model*2, 8]
         output = self.GAST(src, attention_mask)
 
-        # TODO: FIX THIS RESHAPE
-        output = output.reshape(batch_size, (node_embeddings + edge_embeddings), self.d_model, 8)
+        # TODO: FIX THIS RESHAPE output is now [batch_size * (n_nodes + edges), d_model, 8]
+        output = output.view(batch_size, -1, self.d_model, 8)
+
+        # now of every 25, we only want the first 5
+        node_features = output[:, :n_nodes, :, :] # [batch_size, n_nodes, d_model, 8]
+
+        print(node_features.size())
+        
+
 
         output =  og_locations + output[:(5 * batch_size), 1, :]
 
