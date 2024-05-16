@@ -1,51 +1,53 @@
 import torch
 import torch.nn as nn
-from positional_encoding import PositionalEncoding
-from attention import GAST
-from models.modules.linear import MVLinear
 from algebra.cliffordalgebra import CliffordAlgebra
-clifford_algebra = CliffordAlgebra([1, 1, 1])
+from models.modules.linear import MVLinear
+from models.modules.clifford_embedding import NBodyGraphEmbedder
+from attention import MainBody
 
-class NBODY_Transformer(nn.Module):
-    def __init__(self, input_dim, d_model, num_heads, num_layers, batch_size, clifford_algebra, channels):
-        super(NBODY_Transformer, self).__init__()
-        self.positional_encoding = PositionalEncoding(d_model, batch_size)
-        self.GAST = GAST(num_layers=num_layers, num_heads=num_heads, channels=channels, num_nodes=5, num_edges=20,
-                         clifford_algebra=clifford_algebra)
-        self.MVinput = MVLinear(clifford_algebra, input_dim, d_model, subspaces=True)
-        self.MVGP = MVLinear(clifford_algebra, d_model * 2, d_model, subspaces=True)
-        self.n_nodes = 5
-        self.n_edges = 20
 
-    def forward(self, nodes, edges, src_mask, batch_size):
-        # POSITIONAL ENCODING left out for now
-        # edges_in_clifford = self.positional_encoding(edges_in_clifford)
+class NBodyTransformer(nn.Module):
+    def __init__(self, input_dim, d_model, num_heads, num_layers,
+                 clifford_algebra):
+        super(NBodyTransformer, self).__init__()
+        self.clifford_algebra = clifford_algebra
+        self.embedding_layer = NBodyGraphEmbedder(self.clifford_algebra, in_features=input_dim, embed_dim=d_model)
+        self.d_model = d_model
 
-        # Reshape nodes to [batch_size, n_nodes, n_features, feature_dim]
-        nodes = nodes.view(batch_size, self.n_nodes, nodes.size(1), nodes.size(2))
+        self.GAST = MainBody(num_layers, d_model, num_heads, self.clifford_algebra)
+        self.combined_projection = MVLinear(self.clifford_algebra, d_model*2, d_model, subspaces=True)
+        self.MV_input = MVLinear(self.clifford_algebra, input_dim, d_model, subspaces=True)
+        self.MV_GP = MVLinear(self.clifford_algebra, d_model * 2, d_model, subspaces=True)
 
-        # Reshape edges to [batch_size, n_edges, n_features, feature_dim]
-        edges = edges.view(batch_size, self.n_edges, edges.size(1), edges.size(2))
+    def forward(self, batch):
+        batch_size, n_nodes, _ = batch[0].size()
 
-        combined = torch.cat((nodes, edges), dim=1)  # Should be [batch_size, 25, 7, 8]
-        combined = combined.view(batch_size * (self.n_nodes + self.n_edges), combined.size(2),
-                                 combined.size(3))  # Should be [batch_size*25, 7, 8]
-        src = combined
-        # src = torch.cat((nodes, edges), dim=0)
+        # Generate node and edge embeddings along with the attention mask add back attention mask at smoe point please
+        node_embeddings, edge_embeddings, loc_end_clifford, attention_mask, og_locations = self.embedding_layer.embed_nbody_graphs(
+            batch)
 
-        src_MV = self.MVinput(src)
-        src_GP = clifford_algebra.geometric_product(src_MV, src_MV)
-        src_cat = torch.cat((src_MV, src_GP), dim=1)
-        src = self.MVGP(src_cat)
+        # nodes -> [batch_size * n_nodes, d_model/2, 8]
+        # edges -> [batch_size * n_edges, d_model, 8]
+        combined = torch.cat((node_embeddings, edge_embeddings), dim=0)
+        combined_gp = self.clifford_algebra.geometric_product(combined, combined)  # do we also for edges?
+        #edges = self.clifford_algebra.geometric_product(edge_embeddings, edge_embeddings)
 
-        enc_output = self.GAST(src, src_mask)
-        output = enc_output
+        soc_cat = torch.cat((combined, combined_gp), dim=1)
+        # Combine nodes and edges after projection
 
-        # Reshape the tensor to [batch_size, total_elements, 7, 8]
-        reshaped_output = output.view(batch_size, self.n_edges + self.n_nodes, 7, 8)
-        nodes = reshaped_output[:, :self.n_nodes, :, :]
-        selected_feature = nodes[:, :, 1, :]
-        selected_feature = selected_feature.reshape(batch_size * self.n_nodes, 8)
+        #nodes = torch.cat((nodes, edge_embeddings), dim=0)
+        src = self.combined_projection(soc_cat) # check shapes
 
-        # return only nodes and only the "pos" feature vector of the nodes
-        return selected_feature
+        # src -> [batch_size * (n_nodes + n_edges), d_model, 8]
+
+        # Apply MVLinear transformation to the combined embeddings
+
+        # src -> [batch_size * (n_nodes + n_edges), d_model*2, 8]
+        output = self.GAST(src, attention_mask)
+
+        # TODO: FIX THIS RESHAPE
+        output = output.reshape(batch_size, (node_embeddings + edge_embeddings), self.d_model, 8)
+
+        output =  og_locations + output[:(5 * batch_size), 1, :]
+
+        return output, loc_end_clifford
