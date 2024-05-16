@@ -40,6 +40,13 @@ def make_edge_attr(node_features, edges, batch_size):
     edge_attributes = torch.stack(edge_attributes)
     return edge_attributes
 
+# def make_edge_attr(self, node_features, edges):
+#     node1_features = node_features[edges[0]]
+#     node2_features = node_features[edges[1]]
+#     difference = node1_features - node2_features
+#     edge_attributes = torch.cat((node1_features, node2_features, difference), dim=1)
+#     return edge_attributes
+
 def embed_nbody_graphs(batch):
     loc, vel, edge_attr, charges, loc_end, edges = batch
 
