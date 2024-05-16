@@ -34,7 +34,7 @@ class NBodyDataset:
 
     def load(self):
         # dataroot = os.environ["DATAROOT"]
-        dataroot = "/Users/coenvandenelsen/Library/CloudStorage/OneDrive-Kampany/Documenten/AI Master/DL2"
+        dataroot = "/Users/raoulritter/Downloads/"
         # loc = np.load('n_body_system/dataset/loc_' + self.sufix + '.npy')
         loc = np.load(dataroot + "/nbody/loc_" + self.sufix + ".npy")
         # vel = np.load('n_body_system/dataset/vel_' + self.sufix + '.npy')
