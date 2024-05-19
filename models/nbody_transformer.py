@@ -23,7 +23,7 @@ class NBodyTransformer(nn.Module):
         batch_size, n_nodes, _ = batch[0].size()
 
         # Generate node and edge embeddings along with the attention mask add back attention mask at smoe point please
-        node_embeddings, edge_embeddings, loc_end_clifford, attention_mask, og_locations = self.embedding_layer.embed_nbody_graphs(
+        node_embeddings, edge_embeddings, loc_end_clifford, attention_mask, loc_mean = self.embedding_layer.embed_nbody_graphs(
             batch)
 
         # nodes -> [batch_size * n_nodes, d_model/2, 8]
@@ -40,23 +40,10 @@ class NBodyTransformer(nn.Module):
 
         # src -> [batch_size * (n_nodes + n_edges), d_model, 8]
 
-        # Apply MVLinear transformation to the combined embeddings
-
-        # src -> [batch_size * (n_nodes + n_edges), d_model*2, 8]
         output = self.GAST(src, attention_mask)
+        positions = output[:(5 * batch_size), 1, :]
+        embedded_loc_mean = self.clifford_algebra.embed(loc_mean, (1, 2, 3))
+        pred_end_positions = embedded_loc_mean + positions
 
-        # TODO: FIX THIS RESHAPE output is now [batch_size * (n_nodes + edges), d_model, 8]
-        output = output.view(batch_size, -1, self.d_model, 8)
-    
 
-        # now of every 25, we only want the first 5
-        node_features = output[:, :n_nodes, :, :] # [batch_size, n_nodes, d_model, 8]
-
-        # now we only want the position vector HOW DO WE DO THIS
-        positions = node_features[:, :, :1, :]  # [batch_size, n_nodes, 8]
-        positions = positions.view(batch_size, -1, 8)
-
-        output =  og_locations + positions
-        loc_end_clifford = loc_end_clifford.view(batch_size, -1, 8) # IS THIS NEEDED OR RESHAPE THE OTHER ONE?
-
-        return output, loc_end_clifford
+        return pred_end_positions, loc_end_clifford
