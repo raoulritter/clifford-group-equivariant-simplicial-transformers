@@ -41,7 +41,7 @@ The transformer block also includes a multilayer perceptron (MLP) that further p
 
 ## Methodology 
 #### Experimental setup
-- Baseline Models comparison
+- Baseline Models comparison (error, resources, time complexity)
 
 #### Dataset Preparation
 1. **Data Collection**: The dataset includes multiple attributes for nodes and edges, such as location, velocity, edge attributes, and charges, along with the location of targets.
@@ -55,16 +55,15 @@ The transformer block also includes a multilayer perceptron (MLP) that further p
 #### Model architecture
 1. Clifford Algebra Initialization
 2. Embedding Layers
-3. Transformer Blocks:
+3. Transformer Blocks: 
+    - Attention Mechanism
 
 #### Inference and Evaluation
+- Equivariance testing
 - Output Prediction: The model predicts new positions of the nodes by adding the output locations to the initial locations.
 - Performance Metrics: The model's performance is evaluated using MSE on the validation and test datasets. The best model parameters are saved when the validation loss improves.
 
-#### Attention Mechanism
-
 ## Results
-Results of your work (link that part with the code in the jupyter notebook) 
 - Our work compared to other models for error
 - Our work compared to other models for resource utilization- Memory Usage
 - Our work in training and querying runtime- Time Complexity
@@ -95,5 +94,4 @@ Results of your work (link that part with the code in the jupyter notebook)
 - Epochs: 1000 epochs.
 - Early Stopping
 
-
-## Resources
+## Bibliography
