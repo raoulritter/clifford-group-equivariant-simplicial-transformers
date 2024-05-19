@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from torch import nn
 from einops import rearrange
 import math
-from transformer.modules.attention import SelfAttentionClifford
+from model.attention import SelfAttentionClifford
 from algebra.cliffordalgebra import CliffordAlgebra
-from transformer.transformer import NBodyTransformer
+from model.nbody_transformer import NBodyTransformer
 
 
 # Assuming MVLinear and MVLayerNorm are defined elsewhere, import them as well

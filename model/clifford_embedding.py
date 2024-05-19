@@ -1,6 +1,5 @@
 import torch
-from original_models.modules.linear import MVLinear
-
+from models.modules.linear import MVLinear
 
 
 class NBodyGraphEmbedder:
@@ -143,4 +142,3 @@ class NBodyGraphEmbedder:
         attention_mask[0].fill_diagonal_(float('-inf'))
 
         return attention_mask
-

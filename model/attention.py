@@ -7,6 +7,7 @@ from models.modules.mvlayernorm import MVLayerNorm
 from models.modules.mvsilu import MVSiLU
 from einops import rearrange
 
+
 class SelfAttentionClifford(nn.Module):
     def __init__(self, num_feat, num_nodes, num_edges, algebra, num_heads=8):
         super(SelfAttentionClifford, self).__init__()

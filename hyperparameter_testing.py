@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from transformer.transformer import NBodyTransformer
+from model.nbody_transformer import NBodyTransformer
 from algebra.cliffordalgebra import CliffordAlgebra
 from dataset import NBody
 import optuna

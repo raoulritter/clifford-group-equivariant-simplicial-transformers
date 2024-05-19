@@ -50,6 +50,7 @@ class MVLinear(nn.Module):
             torch.nn.init.zeros_(self.bias)
 
     def _forward(self, input):
+        input = input.float() #TODO CHECK WHY THIS IS NOW NEEDED
         return torch.einsum("bm...i, nm->bn...i", input, self.weight)
 
     def _forward_subspaces(self, input):
