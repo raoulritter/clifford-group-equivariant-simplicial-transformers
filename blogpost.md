@@ -1,4 +1,5 @@
 
+# Rough Draft
 ## 1. Introduction 
 #### 1.1 Intro to project
 In this blog report, we introduce an extension to the domain of geometric deep learning: the Clifford Group Equivariant Simplicial Transformers (CGESTs). Our research endeavors to enhance the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs), thereby facilitating efficient and scalable solutions for geometric graph data encompassing triangles and higher-level graph structures.  By successfully implementing our model on the three-dimensional N-body problem, we aim to establish a foundation for its broader application in disciplines such as physics, chemistry, robotics, and computer vision, thereby fostering significant progress across these fields.  
@@ -39,7 +40,7 @@ The mask is converted to a float, with masked positions set to negative infinity
 
 The transformer block also includes a multilayer perceptron (MLP) that further processes the information. The MLP consists of MVLinear layers and  a MVSiLU activation function, introducing non-linearity. Finally the output of the MLP is combined with the previous output of the geometric product through another Add & Norm layer.
 
-## Methodology 
+## Methodology
 #### Experimental setup
 - Baseline Models comparison (error, resources, time complexity)
 
