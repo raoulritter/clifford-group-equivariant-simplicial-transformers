@@ -39,7 +39,29 @@ The mask is converted to a float, with masked positions set to negative infinity
 
 The transformer block also includes a multilayer perceptron (MLP) that further processes the information. The MLP consists of MVLinear layers and  a MVSiLU activation function, introducing non-linearity. Finally the output of the MLP is combined with the previous output of the geometric product through another Add & Norm layer.
 
-## Methodology
+## Methodology 
+#### Experimental setup
+- Baseline Models comparison
+
+#### Dataset Preparation
+1. **Data Collection**: The dataset includes multiple attributes for nodes and edges, such as location, velocity, edge attributes, and charges, along with the location of targets.
+2. **Preprocessing**: 
+- Mean Centering: Each point cloud's mean is computed and subtracted from the coordinates to center the data at the origin.
+
+- Flattening Tensors: The input tensors (locations, velocities, charges) are flattened to streamline processing.
+
+- Edge Handling: Edges and edge attributes are generated from adjacency matrices using the get_edges function, ensuring no self-loops and preparing them for further embedding.
+
+#### Model architecture
+1. Clifford Algebra Initialization
+2. Embedding Layers
+3. Transformer Blocks:
+
+#### Inference and Evaluation
+- Output Prediction: The model predicts new positions of the nodes by adding the output locations to the initial locations.
+- Performance Metrics: The model's performance is evaluated using MSE on the validation and test datasets. The best model parameters are saved when the validation loss improves.
+
+#### Attention Mechanism
 
 ## Results
 Results of your work (link that part with the code in the jupyter notebook) 
@@ -53,3 +75,25 @@ Results of your work (link that part with the code in the jupyter notebook)
 - Evaluation
 - Future Work 
 
+## Apendix
+#### Training Procedure (should this go in the appendix?)
+1. Hyperparameters
+- Input Dimension: 3
+- Model Dimension (d_model): 16
+- Number of Heads: 8
+- Number of Layers: 4
+- Batch Size: 100
+- Number of Samples: 3000
+- Learning Rate: 0.005
+- Weight Decay: 0.0001
+
+2. Loss Function and Optimizer: The model uses Mean Squared Error (MSE) loss and the Adam optimizer.
+
+3. Learning Rate Scheduler: A Cosine Annealing learning rate scheduler adjusts the learning rate based on the epoch number.
+
+4. Training Loop:
+- Epochs: 1000 epochs.
+- Early Stopping
+
+
+## Resources
