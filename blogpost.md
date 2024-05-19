@@ -42,6 +42,9 @@ The transformer block also includes a multilayer perceptron (MLP) that further p
 
 ## Methodology
 #### Experimental setup
+- N-Body Problem and Model Predictions:
+    The N-body problem explained along with what model predicts
+    
 - Baseline Models comparison (error, resources, time complexity)
 
 #### Dataset Preparation
