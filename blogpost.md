@@ -20,7 +20,8 @@ Our project is informed by a series of pivotal advancements in the domain of gra
 ## Architecture
 This architecture is designed to leverage the mathematical properties of Clifford algebra to process and interpret higher-dimensional relationships in data. The architecture consists of two main parts: Embedding Module and Transformer Layers (GAST Layers).
 
-![[media/diagram_1.png]]
+![Architecture Diagram](media/diagram_1.png)
+
 #### 2.1 Embedding- Preparing N-Body
 The embedding module serves as the initial stage where raw input data from the N-body dataset, including nodes and edges, is transformed into a suitable format for the transformer layers. This process involves several key steps, leveraging Clifford algebra to embed both scalar and vector features of each node in a geometric framework.
 
