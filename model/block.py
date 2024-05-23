@@ -6,30 +6,29 @@ from model.attention import SelfAttentionClifford
 
 
 
+
 class GP_Layer(nn.Module):
-        def __init__(self, algebra, in_features_v, hidden_features_v):
-            super().__init__()
-            self.first_layer = MVLinear(algebra, in_features_v, hidden_features_v, subspaces=True, bias=True)
-            self.third_layer = MVLinear(algebra, hidden_features_v, in_features_v, subspaces=True, bias=True)
-            self.norm = MVLayerNorm(algebra, in_features_v)
-            self.algebra = algebra
+    def __init__(self, algebra, in_features_v, hidden_features_v):
+        super().__init__()
+        self.first_layer = MVLinear(algebra, in_features_v, hidden_features_v, subspaces=True, bias=True)
+        self.second_layer = MVLinear(algebra, in_features_v, hidden_features_v, subspaces=True, bias=True)
+        self.third_layer = MVLinear(algebra, hidden_features_v, in_features_v, subspaces=True, bias=True)
+        self.norm = MVLayerNorm(algebra, in_features_v)
+        self.algebra = algebra
 
-        def forward(self, x):
-            x = self.first_layer(x)
-            x = self.algebra.geometric_product(x, x)
-            x = self.third_layer(x)
-            x = self.norm(x)
+    def forward(self, x):
+        x_l = self.first_layer(x)
+        x_r = self.second_layer(x)
+        x = self.algebra.geometric_product(x_l, x_r)
+        x = self.third_layer(x)
+        x = self.norm(x)
 
-            return x
-
+        return x
 
 class TransformerBlock(nn.Module):
-    def __init__(self, d_model, num_heads, clifford_algebra, unique_edges=False):
+    def __init__(self, d_model, num_heads, clifford_algebra, num_edges=20):
         super(TransformerBlock, self).__init__()
-        if unique_edges:
-            num_edges = 10
-        else:
-            num_edges = 20
+
         self.algebra = clifford_algebra
         self.mvlayernorm1 = MVLayerNorm(clifford_algebra, d_model)
         self.self_attn = SelfAttentionClifford(d_model, 5, num_edges, clifford_algebra, num_heads)
@@ -69,10 +68,10 @@ class TransformerBlock(nn.Module):
 
 
 class MainBody(nn.Module):
-    def __init__(self, num_layers, d_model, num_heads, clifford_algebra, unique_edges=False):
+    def __init__(self, num_layers, d_model, num_heads, clifford_algebra, num_edges=20):
         super(MainBody, self).__init__()
         self.layers = nn.ModuleList(
-            [TransformerBlock(d_model, num_heads, clifford_algebra, unique_edges=unique_edges) for _ in range(num_layers)])
+            [TransformerBlock(d_model, num_heads, clifford_algebra, num_edges=num_edges) for _ in range(num_layers)])
 
     def forward(self, src, src_mask=None):
         for layer in self.layers:

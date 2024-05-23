@@ -22,17 +22,20 @@ class TwoLayerMLP(nn.Module):
 
 class NBodyTransformer(nn.Module):
     def __init__(self, input_dim, d_model, num_heads, num_layers,
-                 clifford_algebra, unique_edges=False):
+                 clifford_algebra, num_edges=10, zero_edges=False):
         super(NBodyTransformer, self).__init__()
 
         # Initialize the transformer with the given parameters
         # and the Clifford algebra
         self.clifford_algebra = clifford_algebra
+        self.num_edges = num_edges
+        self.d = d_model
         # Initialize the embedding layer
-        self.embedding_layer = NBodyGraphEmbedder(self.clifford_algebra, in_features=input_dim, embed_dim=d_model, unique_edges=unique_edges)
-        self.GAST = MainBody(num_layers, d_model, num_heads, self.clifford_algebra, unique_edges=unique_edges)
-        self.combined_projection =TwoLayerMLP(self.clifford_algebra, d_model, d_model*4, d_model)
-        self.MV_input = MVLinear(self.clifford_algebra, input_dim, d_model, subspaces=True)
+        self.embedding_layer = NBodyGraphEmbedder(self.clifford_algebra, in_features=input_dim,
+                                                  embed_dim=d_model, num_edges=num_edges, zero_edges=zero_edges)
+        self.GAST = MainBody(num_layers, d_model, num_heads, self.clifford_algebra, num_edges=num_edges)
+        self.combined_projection = TwoLayerMLP(self.clifford_algebra, d_model, d_model*4, d_model)
+        self.x_left = MVLinear(self.clifford_algebra, d_model, d_model, subspaces=True)
 
     def forward(self, batch):
         batch_size, n_nodes, _ = batch[0].size()
@@ -44,13 +47,16 @@ class NBodyTransformer(nn.Module):
             batch)
 
         # Apply MVLinear transformation to the combined embeddings
-        src = self.combined_projection(full_embeddings)
+        src = self.combined_projection(full_embeddings.reshape(batch_size * (n_nodes + self.num_edges), self.d, 8))
         # src -> [batch_size * (n_nodes + n_edges), d_model, 8]
+        src_left = self.x_left(src)
+        #src = self.clifford_algebra.geometric_product(src_left, src)
 
         # Pass through GAST layers
         output = self.GAST(src, attention_mask)
+        output = output.reshape(batch_size, n_nodes + self.num_edges, self.d, 8)
 
-        output_locations = output[:(5 * batch_size), 1, 1:4]
-        new_pos = loc_start + output_locations.view(batch_size, 5, 3)
+        output_locations = output[:,:n_nodes, 1, 1:4].squeeze(2)
+        new_pos = loc_start + output_locations
 
         return new_pos, loc_end

@@ -40,12 +40,14 @@ class SelfAttentionClifford(nn.Module):
 
         # Compute dot product for attention
         q = q / math.sqrt(self.head_dim * 8)  # Scale by sqrt(d_k * 8) 8 from CLIFFORD
-        attn = torch.matmul(q, k.transpose(-2, -1)) # multiple q and k -> [batch_size * num_heads, n_nodes + n_edges, n_nodes + n_edges]
+        attn = torch.bmm(q, k.transpose(-2, -1)) # multiple q and k -> [batch_size * num_heads, n_nodes + n_edges, n_nodes + n_edges]
 
         # Adjust the attention mask
-        attention_mask = attention_mask.unsqueeze(1).repeat(1, self.num_heads, 1,
+        if attention_mask is not None:
+            attention_mask = attention_mask.unsqueeze(1).repeat(1, self.num_heads, 1,
                                                             1).view(-1, n, n)  # Shape: [batch_size, num_heads, n_nodes + n_edges, n_nodes + n_edges]
-        attn = attn + attention_mask  # Apply the mask
+            attn = attn + attention_mask  # Apply the mask
+
         attn = F.softmax(attn, dim=-1)
 
         if test:
