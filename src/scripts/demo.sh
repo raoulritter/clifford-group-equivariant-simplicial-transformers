@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --partition=gpu
 #SBATCH --gpus=1
-#SBATCH --job-name=hpm
+#SBATCH --job-name=demo_model
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=04:00:00
-#SBATCH --output=hp_main_%A.out
+#SBATCH --time=01:00:10
+#SBATCH --output=install_%A.out
 
 module purge
 module load 2022
@@ -15,4 +15,4 @@ module load Anaconda3/2022.05
 # Activate your environment
 source activate cgest_env
 cd ..
-srun python hyperparameter_testing.py --num_edges 10
+srun python nbody_main.py --num_edges 0 --test_only

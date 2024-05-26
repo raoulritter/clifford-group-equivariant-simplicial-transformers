@@ -14,7 +14,7 @@ module load Anaconda3/2022.05
 
 # Your job starts in the directory where you call sbatch
 # Activate your environment
-source activate dl2023
+source activate cgest_env
 
 cd ..
 
