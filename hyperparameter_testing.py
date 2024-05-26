@@ -10,11 +10,12 @@ import argparse
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import joblib
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Hyperparameter optimization for NBodyTransformer.")
     parser.add_argument('--num_samples', type=int, default=1000, help='Number of samples')
     parser.add_argument('--epochs', type=int, default=25, help='Number of epochs for training')
-    parser.add_argument('--num_edges', type=int, choices=[0, 10, 20], default=0, help='Number of edges')
+    parser.add_argument('--num_edges', type=int, choices=[0, 10, 20], default=10, help='Number of edges')
     parser.add_argument('--zero_edges', action='store_true', help='Flag to indicate zero edges')
     parser.add_argument('--n_trials', type=int, default=100, help='Number of trials for hyperparameter optimization')
     return parser.parse_args()
