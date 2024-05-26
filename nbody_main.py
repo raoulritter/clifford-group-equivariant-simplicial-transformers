@@ -47,8 +47,9 @@ def parse_arguments():
     parser.add_argument('--epochs', type=int, default=1000, help='Number of epochs')
     parser.add_argument('--num_edges', type=int, choices=[0, 10, 20], default=10, help='Number of edges')
     parser.add_argument('--weight_decay', type=float, default=0.00001, help='Weight decay')
-    parser.add_argument('--early_stopping_limit', type=int, default=30, help='Early stopping limit')
+    parser.add_argument('--early_stopping_limit', type=int, default=50, help='Early stopping limit')
     parser.add_argument('--zero_edges', action='store_true', help='Flag to indicate zero edges')
+    parser.add_argument('--test_only', action='store_true', help='Flag to indicate find test loss')
     return parser.parse_args()
 
 
@@ -79,6 +80,23 @@ def test_model(model, test_loader, criterion):
 
 def main():
     args = parse_arguments()
+    if args.test_only:
+        model = NBodyTransformer(
+            input_dim=3,
+            d_model=args.d_model,
+            num_heads=args.num_heads,
+            num_layers=args.num_layers,
+            clifford_algebra=CliffordAlgebra([1, 1, 1]),
+            num_edges=args.num_edges,
+            zero_edges=args.zero_edges
+        )
+        model.load_state_dict(torch.load(f'results/trained_models/{args.num_edges}_{args.zero_edges}_best_model.pth'))
+        nbody_data = NBody(num_samples=args.num_samples, batch_size=args.batch_size)
+        test_loader = nbody_data.test_loader()
+        criterion = nn.MSELoss()
+        test_loss = test_model(model, test_loader, criterion)
+        print(f'Test Loss: {test_loss}')
+        return
 
     metric = [1, 1, 1]
     clifford_algebra = CliffordAlgebra(metric)
@@ -112,7 +130,7 @@ def main():
     train_losses = []
     val_losses = []
 
-    for epoch in tqdm(range(args.epochs)):
+    for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, criterion, optimizer, scheduler)
         val_loss = validate_epoch(model, val_loader, criterion)
 
@@ -134,11 +152,8 @@ def main():
 
         print(f'Epoch {epoch + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss}')
 
-    # Save the training and validation losses to a CSV file
-    save_losses_to_csv(args, train_losses, val_losses)
-
     # Load the best model and test it
-    model.load_state_dict(torch.load('best_model.pth'))
+    model.load_state_dict(torch.load(f'./{args.num_edges}_{args.zero_edges}_best_model.pth'))
     test_loss = test_model(model, test_loader, criterion)
     print(f'Test Loss: {test_loss}')
     # Save the training and validation losses to a CSV file
