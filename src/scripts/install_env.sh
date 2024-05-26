@@ -14,7 +14,7 @@ module load Anaconda3/2022.05
 
 cd ..
 
-conda env create -f env.yml
+conda env create -f env.yaml
 conda activate cgest_env
 
 echo "Environment created and activated"
