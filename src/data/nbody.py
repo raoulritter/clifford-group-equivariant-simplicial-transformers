@@ -1,5 +1,4 @@
 # Taken from EGNN repo with minor changes made
-import os
 
 import numpy as np
 import torch

@@ -33,18 +33,7 @@ You can find the tutorial and usage examples in the `notebooks` directory.
 % Add more here:
 
 ## Code Organization
-- `algebra`: Contains algebraic utilities and functions.
-- `nbody_dataset`: Data and scripts related to the n-body problem dataset.
-- `original_models`: %complete here
-- `results`: Directory to store results and outputs from running experiments and hyperparamter search.
-- `scripts`: Additional shell scripts for various tasks for remote development.
-- `transformer`: Implementation of transformer model with modules.
-- `dataset.py`: Script to n-body handle dataset operations.
-- `environment.yml`: Conda environment file.
-- `hyperparameter_testing.py`: Script for testing different hyperparameters.
-- `nbody_main.py`: Main script to run the n-body problem model.
-- `unit_test_model.py`: Unit tests for the models for equivariance and attention.
-
+% TODO
 ## Usage
 To use the scripts, ensure you have installed the required dependencies and activated the conda environment. You can then run the main script or any other scripts provided in the repository.
 
