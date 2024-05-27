@@ -178,10 +178,9 @@ By utilizing grade projections in the linear layers, GAST can precisely transfor
 
 
 #### 2.2 Simpicial Message passing
-
-| <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="30%"> |
-|:--:|
-|(Wikipedia, n.d.)|
+| <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="50%"> |
+| :--: |
+| (Wikipedia, n.d.) |
 
 
 A simplicial graph (or simplicial complex) is a higher-dimensional generalization of a graph where not only vertices (0-simplices) and edges (1-simplices) are considered, but also higher-dimensional simplices like triangles (2-simplices), tetrahedrons (3-simplices), and so on. These simplices are connected in a manner that preserves their topological relationships.
