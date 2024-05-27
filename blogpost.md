@@ -382,7 +382,24 @@ Finally, expanding the scope of the model's applications beyond the N-body probl
 
 ## References
 
-% To fill
+1. Brandstetter, J., van den Berg, R., Welling, M., & Gupta, J. K. (2023). Clifford
+neural layers for pde modeling.
+
+2. Brehmer, J., de Haan, P., Behrends, S., & Cohen, T. (2023). Geometric algebra
+transformer.
+
+3. Eijkelboom, F., Hesselink, R., & Bekkers, E. (2023). E(n) equivariant message
+passing simplicial networks.
+
+4. Liu, C., Ruhe, D., Eijkelboom, F., & Forr ́e, P. (2024). Clifford group equivariant
+simplicial message passing networks.
+
+5. Ruhe, D., Brandstetter, J., & Forr ́e, P. (2023). Clifford group equivariant neural
+networks
+
+6. Create Your Own N-Body Simulation with Python. (2020, September 14). Retrieved from https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9
+
+7. Simplicial Complex. (2009). In Wikipedia. Retrieved from https://en.wikipedia.org/wiki/Simplicial_complex
 
 ## Appendix
 ### Training Procedure (should this go in the appendix?)
@@ -436,3 +453,4 @@ Best Validation Loss: $0.0126$
 **Model with edges (10):**<br>
 Best Hyperparameters: {`d_model`: $128$, `num_heads`: $4$, `num_layers`: $2$, `lr`: $0.00068$, `batch_size`: $50$, `wd`: $7.04e-06$}<br>
 Best Validation Loss: $0.0107$
+
