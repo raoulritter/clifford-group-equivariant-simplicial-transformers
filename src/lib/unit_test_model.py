@@ -1,12 +1,8 @@
 import unittest
 import torch
-import torch.nn.functional as F
-from torch import nn
-from einops import rearrange
-import math
 from nbody_model.modules.attention import SelfAttentionClifford
-from ..algebra.cliffordalgebra import CliffordAlgebra
-from nbody_model.transformer import NBodyTransformer
+from src.lib.nbody_model.algebra import CliffordAlgebra
+from src.lib.nbody_model.modules.transformer import NBodyTransformer
 
 
 # Assuming MVLinear and MVLayerNorm are defined elsewhere, import them as well

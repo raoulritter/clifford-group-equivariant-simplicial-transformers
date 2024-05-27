@@ -1,5 +1,5 @@
 # Importing essential modules from sub-packages
-from .algebra import *
+from src.lib.nbody_model.algebra import *
 from .data import *
 from .lib import *
 from .models import *

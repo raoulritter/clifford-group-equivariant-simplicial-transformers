@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from nbody_model.transformer import NBodyTransformer
-from ..algebra.cliffordalgebra import CliffordAlgebra
-from ..data.nbody import NBody
+from nbody_model.modules.transformer import NBodyTransformer
+from nbody_model.algebra import CliffordAlgebra
+from nbody_model.data.nbody import NBody
+# from .data.nbody import NBody
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import argparse
 import csv

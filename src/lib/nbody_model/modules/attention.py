@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from ....models.modules.linear import MVLinear
+from ..original_modules.linear import MVLinear
+# from ..linear import MVLinear
+# from ....models.modules.linear import MVLinear
 from einops import rearrange
 
 

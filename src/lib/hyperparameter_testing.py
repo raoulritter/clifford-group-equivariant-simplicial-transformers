@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from nbody_model.transformer import NBodyTransformer
-from ..algebra.cliffordalgebra import CliffordAlgebra
-from ..data.nbody import NBody
+from src.lib.nbody_model.modules.transformer import NBodyTransformer
+from src.lib.nbody_model.algebra import CliffordAlgebra
+from src.lib.nbody_model.data import NBody
 import optuna
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import joblib

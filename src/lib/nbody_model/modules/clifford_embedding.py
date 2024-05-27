@@ -1,6 +1,5 @@
 import torch
-from ....models.modules.linear import MVLinear
-
+from ..original_modules.linear import MVLinear
 
 class NBodyGraphEmbedder:
     def __init__(self, clifford_algebra, in_features, embed_dim, num_edges=10, zero_edges=True):

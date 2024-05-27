@@ -1,7 +1,7 @@
 import torch.nn as nn
-from ....models.modules.linear import MVLinear
-from ....models.modules.mvlayernorm import MVLayerNorm
-from ....models.modules.mvsilu import MVSiLU
+from ..original_modules.linear import MVLinear
+from ..original_modules.mvlayernorm import MVLayerNorm
+from ..original_modules.mvsilu import MVSiLU
 from .attention import SelfAttentionClifford
 
 
