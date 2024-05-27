@@ -13,6 +13,7 @@ module load 2022
 module load Anaconda3/2022.05
 
 cd ..
+cd lib
 
 conda env create -f env.yaml
 conda activate cgest_env
