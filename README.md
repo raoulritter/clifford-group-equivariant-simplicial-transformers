@@ -1,12 +1,15 @@
 # clifford-group-equivariant-simplicial-transformers
 
-## Report
-Find a detailed report on the project [here](/blogpost.md)
+
 
 ## Description
 This repository contains code and resources for the "Clifford Group Equivariant Simplicial Transformers" (CGESTs) project. The project aims to develop a new class of equivariant transformers by leveraging simplicial complexes and Clifford algebra to achieve equivariance to the full symmetry group. The codebase includes implementations of the proposed model, experiments, and evaluation scripts.
 
 We introduce an extension to the domain of geometric deep learning with CGESTs, enhancing the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs). This facilitates efficient and scalable solutions for geometric graph data, including triangles and higher-level graph structures. Our model has been successfully implemented on the three-dimensional N-body problem, aiming to establish a foundation for broader applications in physics, chemistry, robotics, and computer vision. 
+
+## Report
+Find a detailed report on the project [here](/blogpost.md).
+
 ## Requirements
 - Python 3.8+
 - Anaconda or Miniconda
@@ -14,12 +17,12 @@ We introduce an extension to the domain of geometric deep learning with CGESTs, 
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone
+   git clone git@github.com:raoulritter/clifford-group-equivariant-simplicial-transformers.git 
    ```
 2. Install the conda environment:
    ```bash
-   conda env create -f environment.yml
-   conda activate 
+   conda env create -f src/lib/env.yaml
+   conda activate cgest_env
    ```
 3. Run the main script:
    ```bash
