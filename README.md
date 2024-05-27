@@ -13,6 +13,9 @@ Find a detailed report on the project [here](/blogpost.md).
 ## Requirements
 - Python 3.8+
 - Anaconda or Miniconda
+   
+## Code Organization
+% TODO
 
 ## Installation
 1. Clone the repository:
@@ -29,14 +32,8 @@ Find a detailed report on the project [here](/blogpost.md).
    python nbody_main.py
    ```
    or use other scripts provided in the repository under *scripts*.
-   
 
-## Tutorial notebook
-You can find the tutorial and usage examples in the `notebooks` directory.
-% Add more here:
 
-## Code Organization
-% TODO
 ## Usage
 To use the scripts, ensure you have installed the required dependencies and activated the conda environment. You can then run the main script or any other scripts provided in the repository.
 
@@ -44,6 +41,9 @@ For example, to run the main script:
 ```bash
 python nbody_main.py
 ```
+## Demo and Reproducibility
+% use pretrained models
+% run scripts 
 
 ## Data
 Data for the n-body problem and other experiments can be found in the `nbody_dataset` directory. 
