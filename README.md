@@ -16,37 +16,6 @@ Find a detailed report on the project [here](/blogpost.md).
    
 ## Code Organization
 
-├── media/                         # Contains media files, such as images and diagrams
-│   └── diagram_1.png              # Example image used for documentation or visualization
-├── results/                       # Stores output files from model runs
-│   ├── hyperparameter_search/     # Subdirectory for hyperparameter tuning results
-│   ├── fin_model_6388474.out      # Output file from a model run
-│   ├── model_edges_zeros_6388476.out  # Output file detailing model edges
-│   └── model_nodes_6388473.out    # Output file detailing model nodes
-├── src/                           # Main source code directory
-│   ├── algebra/                   # Placeholder for algebra-related scripts
-│   ├── data/                      # Contains datasets and data processing scripts
-│   │   ├── nbody_dataset/         # Directory for N-body simulation dataset
-│   │   └── nbody.py               # Script for handling N-body dataset
-│   ├── lib/                       # Contains libraries and modules used across the project
-│   │   ├── nbody_model/           # Directory for N-body simulation models
-│   │   │   ├── modules/           # Contains submodules related to the N-body model
-│   │   │   ├── __init__.py        # Initialization script for the N-body model
-│   │   │   ├── transformer.py     # Transformer module script
-│   │   │   └── hyperparameter_testing.py  # Script for hyperparameter testing
-│   │   └── env.yaml               # Environment configuration file
-│   │   ├── main.py                # Main script to run the project
-│   │   ├── unit_test_model.py     # Unit tests for the model
-│   ├── models/                    # Placeholder for model scripts
-│   ├── scripts/                   # Contains additional scripts used in the project
-│   │   └── __init__.py            # Initialization script for the scripts directory
-│   └── __init__.py                # Initialization script for the src directory
-├── .gitignore                     # Specifies files and directories to be ignored by Git
-├── LICENSE                        # Licensing information for the project
-├── README.md                      # Provides an overview and documentation for the project
-├── blogpost.md                    # Markdown file for the associated blog post
-└── demo.ipynb                     # Jupyter notebook demonstrating the usage and functionality of the project
-
 
 ## Installation
 1. Clone the repository:
