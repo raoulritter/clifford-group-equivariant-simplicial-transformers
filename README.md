@@ -30,6 +30,14 @@ Find a detailed report on the project [here](/blogpost.md).
    conda env create -f src/lib/env.yaml
    conda activate cgest_env
    ```
+
+3. Export your dataroot:
+   ```bash
+   export DATAROOT="/Users/clifford-group-equivariant-simplicial-transformers/src/lib/nbody_model/data/nbody_dataset/"
+   ```
+   This is based on the location where you download this repo. The data root is
+   `./src/lib/nbody_model/data/nbody_dataset/` from the base of this repo. 
+
 3. Run the main script:
    ```bash
    python nbody_main.py
