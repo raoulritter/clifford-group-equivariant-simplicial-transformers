@@ -16,4 +16,4 @@ module load Anaconda3/2022.05
 # Activate your environment
 source activate cgest_env
 cd ..
-srun python nbody_main.py --num_edges 0 
+srun python main.py --num_edges 0 
