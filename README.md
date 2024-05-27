@@ -18,7 +18,7 @@ Find a detailed report on the project [here](/blogpost.md).
 - Anaconda or Miniconda
    
 ## Code Organization
-![Project Structure](media/structure_repo.png)
+![Project Structure](media/fin_structure.png)
 
 ## Installation
 1. Clone the repository:
