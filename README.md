@@ -1,7 +1,7 @@
 # clifford-group-equivariant-simplicial-transformers
 
 ## Report
-Find a detailed report on the project [here]( )% add link
+Find a detailed report on the project [here](/blogpost.md)
 
 ## Description
 This repository contains code and resources for the "Clifford Group Equivariant Simplicial Transformers" (CGESTs) project. The project aims to develop a new class of equivariant transformers by leveraging simplicial complexes and Clifford algebra to achieve equivariance to the full symmetry group. The codebase includes implementations of the proposed model, experiments, and evaluation scripts.
