@@ -1,34 +1,6 @@
 
 # Geometric Algebra Simplicial Transformer (GAST)
 
-## TODO: 
-- How do we implement message passing -> Daan
-- How does our attention work in more detail --> [Architecture section](#architecture) 
-- Our Transformers is based on a vanilla architecture, therefore we can cite the modules in the layers to papers eg. MVLayers cite why they are used, Cite papers where the layers are introduced as part of a transformers.
-- Ablation study
-- Hyperparameter search -> Krijn
-- Update the geometric product in [Architecture section](#architecture) $GP = x_{left} MVLayer(x_{right})$
-- Spel check -> before handing it in 
-- Check other TODO'S within the text
-
-# Feedback from group 10
-- Not clear what the extension of the paper is
-
-- What limitations does Clifford algebra solve, How does Clifford algebra help to surpass the computational constraints of traditional
-approaches?
-
-- How are Simplicial Message Passing Neural Networks (MPNNs) related? --> simplicial message passing section
-
-- What difference in computation takes to use clifford vector space 
-
-- How does this whole solution relate to the traditional way of solving/simulating
-N-body problems?
-
-- unnecessary to describe how you reshape your tensors, especially with regards to
-the batch. "Next, the 3D tensor data is flattened into a 2D tensor, changing the shape from
-(batch, nodes, dim) to (batch * nodes, dim).”
-
-- More information about the n-body problem
 
 ## 1. Introduction 
 ### 1.1 Intro to project
@@ -72,24 +44,25 @@ Our project is informed by a series of pivotal advancements in the domain of gra
 
 **(1) Simplicial Message Passing**
 
-Traditional Message Passing Neural Networks (MPNNs) are foundational yet constrained by the Weisfeiler-Lehman (1-WL) test, which limits their ability to detect complex structures such as higher-dimensional triangles. Xu et al. [\citeA{xu2018powerful}] highlighted that MPNNs, while powerful, can only capture pairwise interactions effectively, thereby missing out on the richer structural information present in higher-order simplices. This limitation is particularly critical in applications requiring the modeling of multi-body interactions and complex topologies, such as in molecular chemistry and social network analysis.
+Traditional Message Passing Neural Networks (MPNNs) are foundational yet constrained by the Weisfeiler-Lehman (1-WL) test, which limits their ability to detect complex structures such as higher-dimensional triangles. Xu et al., 2019 highlighted that MPNNs, while powerful, can only capture pairwise interactions effectively, thereby missing out on the richer structural information present in higher-order simplices. This limitation is particularly critical in applications requiring the modeling of multi-body interactions and complex topologies, such as in molecular chemistry and social network analysis.
 
-Efforts to extend MPNN capabilities through Simplicial Message Passing Networks have shown promise. By explicitly incorporating higher-order simplicial complexes into the message-passing framework, these networks can capture interactions at multiple levels of granularity, enabling more expressive representations of the data [\citeA{bodnar2021weisfeiler}]. However, these approaches often require extensive pre-computation of simplicial complexes, which can limit their scalability and applicability to large-scale datasets.
+Efforts to extend MPNN capabilities through Simplicial Message Passing Networks have shown promise. By explicitly incorporating higher-order simplicial complexes into the message-passing framework, these networks can capture interactions at multiple levels of granularity, enabling more expressive representations of the data (Bodnar et al., 2021). However, these approaches often require extensive pre-computation of simplicial complexes, which can limit their scalability and applicability to large-scale datasets.
 
 **(2) Equivariance**
 
-Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al. [\cite{eijkelboom2023n}] demonstrated that EMPSNs can effectively handle higher-dimensional simplices by leveraging E(n) equivariant message passing. However, these networks often depend on manually calculated geometric data, which can impede scalability and efficiency.
+Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al. Eijkelboom et al.,
+2023 demonstrated that EMPSNs can effectively handle higher-dimensional simplices by leveraging E(n) equivariant message passing. However, these networks often depend on manually calculated geometric data, which can impede scalability and efficiency.
 
-Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have significantly improved the handling of geometric transformations and complex structures. By utilizing steerable Clifford algebra, CGENNs achieve equivariance in a more flexible and scalable manner [\citeA{ruhe2024clifford}; \citeA{liu2024clifford}]. These advancements highlight the potential of geometric algebra to enhance the expressivity and performance of equivariant neural networks.
+Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have significantly improved the handling of geometric transformations and complex structures. By utilizing steerable Clifford algebra, CGENNs achieve equivariance in a more flexible and scalable manner  (Ruhe et al., 2023);  (Liu et al.,
+2024). These advancements highlight the potential of geometric algebra to enhance the expressivity and performance of equivariant neural networks.
 
 **(3) Transformer Architecture**
 
 The Transformer architecture has revolutionized many areas of machine learning due to its ability to capture long-range dependencies and its inherent scalability. Incorporating simplicial message passing into Transformers provides a powerful framework for modeling complex geometric structures.
 
-The Geometric Algebra Transformer (GATR) proposed by Brehmer (2023) employs geometric algebra to achieve equivariance with enhanced efficiency [\citeA{brehmer2023geometric}]. GATR leverages the rich algebraic structure of geometric algebra to perform transformations that are equivariant by design, thus maintaining the geometric integrity of the data throughout the learning process.
+The Geometric Algebra Transformer (GATR) proposed by Brehmer (2023) employs geometric algebra to achieve equivariance with enhanced efficiency  (Brehmer et al., 2023). GATR leverages the rich algebraic structure of geometric algebra to perform transformations that are equivariant by design, thus maintaining the geometric integrity of the data throughout the learning process.
 
-Previous research has also explored simplicial transformers using Clifford algebra to define triangular attention via geometric products [\citeA{DBLP
-/corr/abs-1909-00668}]. These methods extend the attention mechanism to higher-order simplices, allowing for the capture of more complex interactions within the graph. However, the computational complexity of these models remains a significant challenge, particularly when applied to large-scale datasets ( O(n^3) ). Although these methods do use the geometric product to define a product of more than two nodes, these models are not equivariant.
+Previous research has also explored simplicial transformers using Clifford algebra to define triangular attention via geometric products (Clift et al., 2019). These methods extend the attention mechanism to higher-order simplices, allowing for the capture of more complex interactions within the graph. However, the computational complexity of these models remains a significant challenge, particularly when applied to large-scale datasets ( $O(n^3)$ ). Although these methods do use the geometric product to define a product of more than two nodes, these models are not equivariant.
 
 
 **Integrating the Three Features in GAST**
@@ -116,7 +89,7 @@ By embedding data into these subspaces, we can capture a wide range of geometric
 
 <div style="text-align: center;">
   <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%">
-  <p>(Ruhe, Brandstetter, & Forré, 2023)</p>
+  <p>(Ruhe et al., 2023)</p>
 </div>
 
 
@@ -382,24 +355,26 @@ Finally, expanding the scope of the model's applications beyond the N-body probl
 
 ## References
 
-1. Brandstetter, J., van den Berg, R., Welling, M., & Gupta, J. K. (2023). Clifford
-neural layers for pde modeling.
+1. Bodnar, C., Frasca, F., Wang, Y. G., Otter, N., Montúfar, G., Liò, P., & Bronstein, M. (2021). Weisfeiler and Lehman go topological: Message passing simplicial networks.
 
-2. Brehmer, J., de Haan, P., Behrends, S., & Cohen, T. (2023). Geometric algebra
-transformer.
+2. Brandstetter, J., van den Berg, R., Welling, M., & Gupta, J. K. (2023). Clifford neural layers for PDE modeling.
 
-3. Eijkelboom, F., Hesselink, R., & Bekkers, E. (2023). E(n) equivariant message
-passing simplicial networks.
+3. Brehmer, J., de Haan, P., Behrends, S., & Cohen, T. (2023). Geometric algebra transformer.
 
-4. Liu, C., Ruhe, D., Eijkelboom, F., & Forr ́e, P. (2024). Clifford group equivariant
-simplicial message passing networks.
+4. Clift, J., Doryn, D., Murfet, D., & Wallbridge, J. (2019). Logic and the 2-simplicial transformer.
 
-5. Ruhe, D., Brandstetter, J., & Forr ́e, P. (2023). Clifford group equivariant neural
-networks
+5. Eijkelboom, F., Hesselink, R., & Bekkers, E. (2023). E(n) equivariant message passing simplicial networks.
 
-6. Create Your Own N-Body Simulation with Python. (2020, September 14). Retrieved from https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9
+6. Liu, C., Ruhe, D., Eijkelboom, F., & Forré, P. (2024). Clifford group equivariant simplicial message passing networks.
 
-7. Simplicial Complex. (2009). In Wikipedia. Retrieved from https://en.wikipedia.org/wiki/Simplicial_complex
+7. Ruhe, D., Brandstetter, J., & Forré, P. (2023). Clifford group equivariant neural networks. *Advances in Applied Mathematics*, 45(1), 89-102.
+
+8. Xu, K., Hu, W., Leskovec, J., & Jegelka, S. (2019). How powerful are graph neural networks?
+
+9. Create Your Own N-Body Simulation with Python. (2020, September 14). Retrieved from [https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9](https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9)
+
+10. Simplicial Complex. (n.d.). In *Wikipedia*. Retrieved from [https://en.wikipedia.org/wiki/Simplicial_complex](https://en.wikipedia.org/wiki/Simplicial_complex)
+
 
 ## Appendix
 ### Training Procedure (should this go in the appendix?)
