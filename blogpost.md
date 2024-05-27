@@ -6,10 +6,9 @@
 ### 1.1 Intro to project
 In this blog report, we introduce an extension to the domain of geometric deep learning: the Geometric Algebra Simplicial Transformer (GAST). Our research endeavors to enhance the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs) while maintaining equivariance, thereby facilitating efficient and scalable solutions for geometric graph data encompassing triangles and higher-order graph structures.  By successfully implementing our model on the three-dimensional N-body problem, we aim to establish a foundation for its broader application in disciplines such as physics, chemistry, robotics, and computer vision, thereby fostering significant progress across these fields.  
 
-<div style="text-align: center;">
-  <img src="media/CSMPNs.png" alt="Equivariant Simplicial Networks" width="100%">
-  <p>(Liu et al., 2024)</p>
-</div>
+| <img src="media/CSMPNs.png" alt="Equivariant Simplicial Networks" width="100%"> |
+|:--:|
+|(Liu et al., 2024)|
 
 ### 1.2 The Problem
 In various fields such as chemistry, physics, biology, and social sciences, data can be represented as a graph. The graph structures often contain geometric information and higher order simplicial structures, which can present significant challenges for traditional computational models. For polymer chains in chemistry the geometric information of atoms (0-simplices) can be locations in 3D space. For social networks people (0-simplices) can have locations on a map. Atoms and people can also contain non-geometric information such as charge in the case of atoms or haircolour for humans. Examples of higher order simplicial structures can be bonds between two (1-simplices) or more atoms (higher order-simplices) or friendships (1-simplices) and friendgroups in social networks (higher order simplices). In the case of social networks, understanding these higher-order interactions is essential for applications such as community detection, information diffusion, and recommendation systems. For polymers, modeling the interactions between atoms accurately is crucial for understanding and predicting the physical and chemical properties, which has implications for material science, drug design, and nanotechnology.
@@ -23,11 +22,9 @@ Our solution, GAST, leverages Geometric/Clifford algebra in combination with the
 
 
 ### 1.3 The Dataset
-<div style="text-align: center;">
-  <img src="media/n_nody.png" alt="Nbody in 2D" width="40%">
-  <p>(Medium, 2020)</p>
-</div>
-
+| <img src="media/n_nody.png" alt="Nbody in 2D" width="40%"> |
+|:--:|
+|(Medium, 2020)|
 To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles interacting with each other because of their charges, velocities and locations in 3D space. The N-body problem is can be computationally intensive due to the exponential growth of pairwise interactions and the high precision required, making traditional algorithms inefficient for large systems. Machine learning, particularly neural networks, becomes a necessity as it can approximate complex interactions more efficiently, allowing for scalable and faster predictions with large datasets. This choice of dataset is strategic. On one hand it presents a classic challenge in physics. On the other hand, it is used in related studies and therefore offers a robust platform for testing our model against established benchmarks. It allows us to critically assess the effectiveness of our approach in a well-understood scientific context.
 
 
@@ -87,11 +84,9 @@ Clifford algebra consists of multiple subspaces, each representing different geo
 
 By embedding data into these subspaces, we can capture a wide range of geometric and non-geometric properties.
 
-<div style="text-align: center;">
-  <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%">
-  <p>(Ruhe et al., 2023)</p>
-</div>
-
+| <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%"> |
+|:--:|
+|(Ruhe et al., 2023)|
 
 #### (2) Geometric Products
 
@@ -184,10 +179,9 @@ By utilizing grade projections in the linear layers, GAST can precisely transfor
 
 #### 2.2 Simpicial Message passing
 
-<div style="text-align: center;">
-  <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="30%">
-  <p>(Wikipedia, 2009)</p>
-</div>
+| <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="30%"> |
+|:--:|
+|(Wikipedia, n.d.)|
 
 
 A simplicial graph (or simplicial complex) is a higher-dimensional generalization of a graph where not only vertices (0-simplices) and edges (1-simplices) are considered, but also higher-dimensional simplices like triangles (2-simplices), tetrahedrons (3-simplices), and so on. These simplices are connected in a manner that preserves their topological relationships.
