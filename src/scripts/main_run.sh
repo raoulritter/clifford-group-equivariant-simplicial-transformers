@@ -18,4 +18,4 @@ source activate cgest_env
 
 cd ..
 
-srun python nbody_main.py
+srun python main.py
