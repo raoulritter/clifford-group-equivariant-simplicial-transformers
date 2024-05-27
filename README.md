@@ -15,7 +15,37 @@ Find a detailed report on the project [here](/blogpost.md).
 - Anaconda or Miniconda
    
 ## Code Organization
-% TODO
+├── media/
+│   └── diagram_1.png
+├── results/
+│   ├── hyperparameter_search/
+│   ├── fin_model_6388474.out
+│   ├── model_edges_zeros_6388476.out
+│   └── model_nodes_6388473.out
+├── src/
+│   ├── algebra/
+│   ├── data/
+│   │   ├── nbody_dataset/
+│   │   └── nbody.py
+│   ├── lib/
+│   │   ├── nbody_model/
+│   │   │   ├── modules/
+│   │   │   ├── __init__.py
+│   │   │   ├── transformer.py
+│   │   │   └── hyperparameter_testing.py
+│   │   └── env.yaml
+│   │   ├── main.py
+│   │   ├── unit_test_model.py
+│   ├── models/
+│   ├── scripts/
+│   │   └── __init__.py
+│   ├── __init__.py
+├── .gitignore
+├── LICENSE
+├── README.md
+├── blogpost.md
+└── demo.ipynb
+
 
 ## Installation
 1. Clone the repository:
