@@ -8,6 +8,8 @@ This repository contains code and resources for the "Clifford Group Equivariant 
 
 We introduce an extension to the domain of geometric deep learning with CGESTs, enhancing the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs). This facilitates efficient and scalable solutions for geometric graph data, including triangles and higher-level graph structures. Our model has been successfully implemented on the three-dimensional N-body problem, aiming to establish a foundation for broader applications in physics, chemistry, robotics, and computer vision. 
 
+## Performance
+
 ## Report
 Find a detailed report on the project [here](/blogpost.md).
 
