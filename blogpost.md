@@ -47,7 +47,7 @@ Efforts to extend MPNN capabilities through Simplicial Message Passing Networks 
 
 **(2) Equivariance**
 
-Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al. Eijkelboom et al.,
+Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al.,
 2023 demonstrated that EMPSNs can effectively handle higher-dimensional simplices by leveraging E(n) equivariant message passing. However, these networks often depend on manually calculated geometric data, which can impede scalability and efficiency.
 
 Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have significantly improved the handling of geometric transformations and complex structures. By utilizing steerable Clifford algebra, CGENNs achieve equivariance in a more flexible and scalable manner  (Ruhe et al., 2023);  (Liu et al.,
