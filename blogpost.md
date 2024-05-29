@@ -212,7 +212,7 @@ This architecture is designed to leverage the mathematical properties of Cliffor
 
 
 
-#### 3.1 Embedding- Preparing N-Body
+#### 3.1 Embedding- Preparing N-Body COEN
 The embedding module serves as the initial stage where raw input data from the N-body dataset, including nodes and edges, is transformed into a suitable format for the transformer layers. This process involves several key steps, leveraging Clifford algebra to embed both scalar and vector features of each node in a geometric framework.
 
 The embedding process starts with mean centering, where the mean of the point cloud is calculated and subtracted from each point to ensure the data is normalized around the origin.  Next, the 3D tensor data is flattened into a 2D tensor, changing the shape from (batch, nodes, dim) to (batch * nodes, dim). Flattening simplifies the data structure, making it easier to process in subsequent layers. COEN
@@ -250,14 +250,14 @@ The data consists of particle trajectories over a specified time interval. Each 
 
 ### 4.2 Experimental setup
 
-#### 4.2.1 Data Preparation
+#### 4.2.1 Data Preparation COEN
 The dataset used for this study is instantiated through the NBodyDataset class, designed to handle specific partitions of the dataset (train, valid, and test). Each instance of the dataset is initialized with parameters including the data partition type, the root directory of the data, a suffix identifying specific datasets, and a maximum number of samples to load.
 
 During initialization, the load method is invoked to read the necessary .npy files containing locations (loc), velocities (vel), edges, and charges from the specified directory. Following data loading, the preprocess method converts these numpy arrays into PyTorch tensors and adjusts their dimensions to match the expected input format for the model. This step includes generating edge attributes through the get_edges function. Additionally, if a sample limit is set, the limit_samples method restricts the data to the specified number of samples.
 
 For efficient data handling during training and validation, the NBody class is employed to initialize datasets for training, validation, and testing. Instances of the NBodyDataset class are created for each data partition. Subsequently, data loaders are prepared using PyTorch’s DataLoader with specified batch sizes and shuffling options, ensuring efficient batching and data access patterns during model training and evaluation.
 
-#### 4.2.2 Hyperparameter Tuning
+#### 4.2.2 Hyperparameter Tuning COEN
  Hyperparameter optimization was conducted using Optuna, a framework for automated hyperparameter tuning. The objective was to minimize the model's validation loss. This testing was done for each of the three models separately. The hyperparameters and their search ranges include:
  
 
@@ -272,7 +272,7 @@ The testing was conducted using 1000 data samples, 50 epochs per trial.
 The hyperparameter optimization was executed over 100 trials. Each trial represented a unique combination of hyperparameters, and the best set of hyperparameters was determined based on the lowest validation loss achieved, for specific results see our Appendix.
 
 
-#### 4.2.3 Training
+#### 4.2.3 Training COEN
 The training process commenced with the initialization of the NBodyTransformer models, where each model was configured with a set of hyperparameters determined through a preceding optimization phase. The models were trained using a dataset partitioned into training, validation, and test sets, ensuring that each phase had access to appropriate data for learning and evaluation.
 
 During the training phase, the models processed batches of training data through a forward pass to generate predictions. The discrepancy between the predicted values and the true values was quantified using the Mean Squared Error (MSE) loss function. This loss function was chosen for its effectiveness in regression tasks, which aligns with the objective of the NBodyTransformer models.
@@ -337,7 +337,9 @@ The evaluation of our Geometric Algebra Simplicial Transformer (GAST) model invo
 
 Additionally, the complexity of the model and the intricacies of implementing geometric algebra operations posed significant challenges. These challenges sometimes led to increased computational overhead and longer training times. Simplifying certain aspects of the implementation or optimizing the geometric product calculations could mitigate these issues and improve the model's efficiency.
 
-Moreover, while the GAST model demonstrated strong performance in capturing particle interactions, there were instances where it struggled with specific configurations or datasets. These limitations suggest that further refinement of the model's architecture, particularly in how it handles edge information and higher-order simplices, is necessary to ensure consistent and reliable performance across diverse scenarios.
+Moreover, while the GAST model demonstrated strong performance in capturing particle interactions, there were instances where it struggled with specific configurations or datasets. These limitations suggest that further refinement of the model's architecture, particularly in how it handles edge information and higher-order simplices, is necessary to ensure consistent and reliable performance across diverse scenarios. COEN?
+
+Add dataset eval and add scalars separate!! COEN
   
 ### Future Work 
 Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model.
