@@ -17,7 +17,7 @@ In various fields such as chemistry, physics, biology, and social sciences, data
 Despite the importance of these complex structures, traditional Message Passing Neural Networks (MPNNs) fall short in using geometric information and higher-order simplicial structures. MPNNs are limited to pairwise interactions and struggle with scalability as the size of the graphs increase. Scalability in Graph Neural Networks (GNNs) remains a significant challenge when applied to larger graphs, due to increased computational demands and the complexity of maintaining effective neighborhood aggregations across extensive network structures. This limitation becomes even more pronounced in applications such as the three-dimensional N-body problem--an example of a fully connected graph--where interactions grow exponentially with dimensionality ( O(n^2) ).
 
 
-Our solution, GAST, leverages Geometric/Clifford algebra in combination with the Transformer architecture to surpass these constraints, enabling the use of simplicial structure within graph data, while maintaining scalability and equivariance to geometric transformations. Our model equips Transformers with the capability to rival and potentially surpass the expressivity of E(n) equivariant message passing simplicial networks (EMPSNs) while maintaining computational efficiency. We do this by making Transformers equivariant through the use of clifford vectors and equivariant operators. Next to that, we lift the graph to the simplicial complex by initiating tokens for the 1- (and possibly higher) simplices, that can only pass messages to -and receive from- their adjacent structures. This is additional to the tokens for nodes, which can pass and receive from all nodes, just as in regular Transformers. COEN
+Our solution, GAST, leverages Geometric/Clifford algebra in combination with the Transformer architecture to surpass these constraints, enabling the use of simplicial structure within graph data, while maintaining scalability and equivariance to geometric transformations. Our model equips Transformers with the capability to rival and potentially surpass the expressivity of E(n) equivariant message passing simplicial networks (EMPSNs) while maintaining computational efficiency. We do this by making Transformers equivariant through the use of clifford vectors and equivariant operators. Next to that, we lift the graph to the simplicial complex by initiating tokens for the 1- (and possibly higher) simplices, that can only pass messages to -and receive from- their adjacent structures. This is additional to the tokens for nodes, which can pass and receive from all nodes, just as in regular Transformers.
 
 
 
@@ -212,10 +212,10 @@ This architecture is designed to leverage the mathematical properties of Cliffor
 
 
 
-#### 3.1 Embedding- Preparing N-Body COEN
+#### 3.1 Embedding- Preparing N-Body (TODO COEN: a lot of unnecessary info here, compress)
 The embedding module serves as the initial stage where raw input data from the N-body dataset, including nodes and edges, is transformed into a suitable format for the transformer layers. This process involves several key steps, leveraging Clifford algebra to embed both scalar and vector features of each node in a geometric framework.
 
-The embedding process starts with mean centering, where the mean of the point cloud is calculated and subtracted from each point to ensure the data is normalized around the origin.  Next, the 3D tensor data is flattened into a 2D tensor, changing the shape from (batch, nodes, dim) to (batch * nodes, dim). Flattening simplifies the data structure, making it easier to process in subsequent layers. COEN
+The embedding process starts with mean centering, where the mean of the point cloud is calculated and subtracted from each point to ensure the data is normalized around the origin.  Next, the 3D tensor data is flattened into a 2D tensor, changing the shape from (batch, nodes, dim) to (batch * nodes, dim). Flattening simplifies the data structure, making it easier to process in subsequent layers. (TODO COEN: stuff like code things as this can go away)
 
 Each data point, including positions, velocities, and charges, is then embedded into the Clifford algebra space. Scalar features, such as charges are embedded in the subspace $CL^{0}(\mathbb{R^d, q}) = \mathbb{R}$, which is the subspace of all scalars. Vector features, such as positions and velocies are embedded in the subspace $CL^{1}(\mathbb{R^d, q}) = \mathbb{R^d}$ representing the vector subspace. (refer to David's paper TODO)
 
@@ -225,23 +225,24 @@ To manage the combined properties of positions and velocities, these are first s
 
 After embedding, the scalar and vector features are concatenated and transformed through an MVLinear layer, projecting the data into a Clifford algebra space, preparing them for the transformer layers.
 
-#### 3.2 Transformer Layers
+#### 3.2 Transformer Layers (TODO COEN: Rewrite and complete this)
 The core of the GAST architecture is the transformer layers, specifically designed to handle multivector inputs and ensure equivariance. These layers include several components:
 
 First, the MVLayer Normalization normalizes multivector inputs. Next, the self-attention mechanism computes attention scores for the nodes and edges within the graph. Our attention mask within the self-attention  is initialized with zeros for a single batch, allowing nodes to attend to themselves and all other nodes within the same graph (TODO, this might have changed). Additionally, edges can attend to their corresponding nodes, and nodes can attend to their corresponding edges.
 The mask is converted to a float, with masked positions set to negative infinity and allowed positions set to zero. The diagonal of the attention mask is set to negative infinity to prevent self-loops. The self-attention layer calculates the attention weights using these masks and applies them to the value matrix to produce the attended output. This attended output is then combined with the original input through an Add & Norm layer. Following the self-attention mechanism, a Clifford algebra geometric product is applied. 
 
-The transformer block also includes a multilayer perceptron (MLP) that further processes the information. The MLP consists of MVLinear layers and  a MVSiLU activation function, introducing non-linearity. Finally, the output of the MLP is combined with the previous output of the geometric product through another Add & Norm layer. COEN
+The transformer block also includes a multilayer perceptron (MLP) that further processes the information. The MLP consists of MVLinear layers and  a MVSiLU activation function, introducing non-linearity. Finally, the output of the MLP is combined with the previous output of the geometric product through another Add & Norm layer. 
 
 ## 4. Methodology
 In this study, we investigate the significance of edge information in enhancing the performance of NBodyTransformer models tasked with predicting future positions within such systems. Three distinct configurations were rigorously tested, each shedding light on the role of edge information:
 
 1. Model with Node and Edge Information: This configuration maintains edge information structures and edge attributes from data.
 2. Model Skipping Edge Information: Here, the model deliberately excludes edge information from its computations.
-3. Model with Edges Initialized as Zero Vectors: In this setup, edges are initialized as zero vectors. COEN
+3. Model with Edges Initialized as Zero Vectors: In this setup, edges are initialized as zero vectors. (TODO COEN: add additional explanation)
 
 We describe our methodology in the following section. 
-### 4.1 Dataset generation
+
+### 4.1 Dataset generation (TODO COEN: remove unnecesary info)
 The dataset for [nobody](./src/lib/nbody_model/data) utilized in this study was generated using the [EGNN Repository](https://github.com/vgsatorras/egnn.git)
 using the default values: ```--num-train 10000 --seed 43 --sufix small```.
 
@@ -250,14 +251,14 @@ The data consists of particle trajectories over a specified time interval. Each 
 
 ### 4.2 Experimental setup
 
-#### 4.2.1 Data Preparation COEN
+#### 4.2.1 Data Preparation (TODO COEN: a lot is redundant remove unnecesary info)
 The dataset used for this study is instantiated through the NBodyDataset class, designed to handle specific partitions of the dataset (train, valid, and test). Each instance of the dataset is initialized with parameters including the data partition type, the root directory of the data, a suffix identifying specific datasets, and a maximum number of samples to load.
 
 During initialization, the load method is invoked to read the necessary .npy files containing locations (loc), velocities (vel), edges, and charges from the specified directory. Following data loading, the preprocess method converts these numpy arrays into PyTorch tensors and adjusts their dimensions to match the expected input format for the model. This step includes generating edge attributes through the get_edges function. Additionally, if a sample limit is set, the limit_samples method restricts the data to the specified number of samples.
 
 For efficient data handling during training and validation, the NBody class is employed to initialize datasets for training, validation, and testing. Instances of the NBodyDataset class are created for each data partition. Subsequently, data loaders are prepared using PyTorch’s DataLoader with specified batch sizes and shuffling options, ensuring efficient batching and data access patterns during model training and evaluation.
 
-#### 4.2.2 Hyperparameter Tuning COEN
+#### 4.2.2 Hyperparameter Tuning (TODO COEN: Think this can be reduced and moved to appendix)
  Hyperparameter optimization was conducted using Optuna, a framework for automated hyperparameter tuning. The objective was to minimize the model's validation loss. This testing was done for each of the three models separately. The hyperparameters and their search ranges include:
  
 
@@ -272,7 +273,7 @@ The testing was conducted using 1000 data samples, 50 epochs per trial.
 The hyperparameter optimization was executed over 100 trials. Each trial represented a unique combination of hyperparameters, and the best set of hyperparameters was determined based on the lowest validation loss achieved, for specific results see our Appendix.
 
 
-#### 4.2.3 Training COEN
+#### 4.2.3 Training (TODO COEN: reduced by al lot, maybe do optimizers and Loss function in table but no more)
 The training process commenced with the initialization of the NBodyTransformer models, where each model was configured with a set of hyperparameters determined through a preceding optimization phase. The models were trained using a dataset partitioned into training, validation, and test sets, ensuring that each phase had access to appropriate data for learning and evaluation.
 
 During the training phase, the models processed batches of training data through a forward pass to generate predictions. The discrepancy between the predicted values and the true values was quantified using the Mean Squared Error (MSE) loss function. This loss function was chosen for its effectiveness in regression tasks, which aligns with the objective of the NBodyTransformer models.
@@ -286,7 +287,7 @@ An essential component of the training process was the implementation of early s
 The training process was iterative, spanning multiple epochs (default 1000). In each epoch, the entire training dataset was utilized to update the model parameters. The iterative nature of the training allowed the models to progressively improve their predictions by learning from the data and minimizing the loss function. The use of early stopping ensured that the models did not continue to train beyond the point of optimal performance on the validation set, thus maintaining generalization capabilities. The model with the best validation loss during training was saved and utilized for testing.
 
 
-#### 4.2.4 Evaluation
+#### 4.2.4 Evaluation (TODO COEN: remove unnecesary info)
 
 The evaluation of the NBodyTransformer models involved several steps to ensure a thorough and accurate assessment of their performance. This section outlines the key components of the evaluation process.
 
@@ -307,7 +308,7 @@ To further validate the model's generalization capabilities, the saved best mode
 
 ### Results Ablation Study
 
-To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAST) model, we applied it to a three-dimensional N-body problem dataset, a fundamental challenge in physics that involves predicting the motions of particles interacting due to their charges, velocities, and locations in 3D space. We compared three different models: the Node Only Model, the Normal Standard Model, and the Model with Edges as Zeros. Each model was assessed based on its test loss to determine its accuracy and effectiveness in capturing the complex interactions within the dataset. The test losses for each model are summarized in Table 1.
+To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAST) model, we applied it to a three-dimensional N-body problem dataset, a fundamental challenge in physics that involves predicting the motions of particles interacting due to their charges, velocities, and locations in 3D space. We compared three different models: the Node Only Model, the Normal Standard Model, and the Model with Edges as Zeros. Each model was assessed based on its test loss to determine its accuracy and effectiveness in capturing the complex interactions within the dataset. The test losses for each model are summarized in Table 1. (TODO COEN: Table -> nice graph?)
 
 
 <div align="center">
@@ -332,17 +333,17 @@ The findings from our study highlight the critical role of edge information in e
 
 
 
-### Evaluation
+### Evaluation (TODO COEN: first 2 points even needed here? what is the point made in the 3rd point?)
 The evaluation of our Geometric Algebra Simplicial Transformer (GAST) model involved a comprehensive assessment of its performance across various configurations and hyperparameter settings. Despite the promising results, several areas for improvement were identified throughout the project. One key point of criticism is the need for a broader and more systematic hyperparameter search. While our initial search covered a range of values, expanding this search space could uncover more optimal configurations that further enhance model performance.
 
 Additionally, the complexity of the model and the intricacies of implementing geometric algebra operations posed significant challenges. These challenges sometimes led to increased computational overhead and longer training times. Simplifying certain aspects of the implementation or optimizing the geometric product calculations could mitigate these issues and improve the model's efficiency.
 
-Moreover, while the GAST model demonstrated strong performance in capturing particle interactions, there were instances where it struggled with specific configurations or datasets. These limitations suggest that further refinement of the model's architecture, particularly in how it handles edge information and higher-order simplices, is necessary to ensure consistent and reliable performance across diverse scenarios. COEN?
+Moreover, while the GAST model demonstrated strong performance in capturing particle interactions, there were instances where it struggled with specific configurations or datasets. These limitations suggest that further refinement of the model's architecture, particularly in how it handles edge information and higher-order simplices, is necessary to ensure consistent and reliable performance across diverse scenarios. 
 
-Add dataset eval and add scalars separate!! COEN
+(TODO COEN: add that embedding scalars and mv could be nice, if the results say so)
   
 ### Future Work 
-Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model. COEN
+Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model. (TODO COEN: adding info in edge, only while removing charge info in nodes!)
 
 Furthermore, exploring more advanced and diverse hyperparameter optimization techniques could lead to better model configurations and improved performance. Techniques such as Bayesian optimization or reinforcement learning-based hyperparameter tuning might offer more efficient and effective ways to search the hyperparameter space.
 
