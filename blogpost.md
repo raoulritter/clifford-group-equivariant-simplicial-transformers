@@ -246,7 +246,7 @@ We describe our methodology in the following section.
 The dataset for [nobody](./src/lib/nbody_model/data) utilized in this study was generated using the [EGNN Repository](https://github.com/vgsatorras/egnn.git)
 using the default values: ```--num-train 10000 --seed 43 --sufix small```.
 
-The data consists of particle trajectories over a specified time interval. Each datapoint includes the initial positions $Loc \in \mathbb{R^{5 \times 3}}$, initial velocities $V \in \mathbb{R^{5 \times 3}}$ or $V \in \mathbb{R^{5 \times 2 \times 3}}$, adjacency matrices representing particle interactions $E \in \{ 1, 0\}^{2 \times 20}$ or $E \in \{ 1, 0\}^{5 \times 5}$(TODO which one is this correct? I get the first one when I debug the vectors in the preprocess function in clifford_embedding.py), and charge values $C \in \{ +1, -0\}^{5}$. Our model aims to predict the positions of particles after a certain time interval based on their initial states and interactions.
+The data consists of particle trajectories over a specified time interval. Each datapoint includes the initial positions $Loc \in \mathbb{R^{5 \times 3}}$, initial velocities $V \in \mathbb{R^{5 \times 3}}$ or $V \in \mathbb{R^{5 \times 2 \times 3}}$, adjacency matrices representing particle interactions $E \in \{ 1, 0\}^{2 \times 20}$ or $E \in \{ 1, 0\}^{5 \times 5}$(TODO which one is this correct? I get the first one when I debug the vectors in the preprocess function in clifford_embedding.py), and charge values (TODO COEN: IS THIS TRUE) $C \in \{ +1, -0\}^{5}$. Our model aims to predict the positions of particles after a certain time interval based on their initial states and interactions.
 
 
 ### 4.2 Experimental setup
