@@ -238,7 +238,7 @@ In this study, we investigate the significance of edge information in enhancing 
 
 1. Model with Node and Edge Information: This configuration maintains edge information structures and edge attributes from data.
 2. Model Skipping Edge Information: Here, the model deliberately excludes edge information from its computations.
-3. Model with Edges Initialized as Zero Vectors: In this setup, edges are initialized as zero vectors.
+3. Model with Edges Initialized as Zero Vectors: In this setup, edges are initialized as zero vectors. COEN
 
 We describe our methodology in the following section. 
 ### 4.1 Dataset generation
