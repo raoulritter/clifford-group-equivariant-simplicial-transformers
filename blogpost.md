@@ -22,7 +22,7 @@ Our solution, GAST, leverages Geometric/Clifford algebra in combination with the
 
 
 ### 1.3 The Dataset
-| <img src="media/n_nody.png" alt="Nbody in 2D" width="40%"> |
+| <img src="media/nbody_gif.gif" alt="Nbody in 2D" width="40%"> |
 |:--:|
 |(Medium, 2020)|
 To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles interacting with each other because of their charges, velocities and locations in 3D space. The N-body problem is can be computationally intensive due to the exponential growth of pairwise interactions and the high precision required, making traditional algorithms inefficient for large systems. Machine learning, particularly neural networks, becomes a necessity as it can approximate complex interactions more efficiently, allowing for scalable and faster predictions with large datasets. This choice of dataset is strategic. On one hand it presents a classic challenge in physics. On the other hand, it is used in related studies and therefore offers a robust platform for testing our model against established benchmarks. It allows us to critically assess the effectiveness of our approach in a well-understood scientific context.
