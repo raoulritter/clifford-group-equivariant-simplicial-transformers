@@ -163,16 +163,39 @@ $$\langle M \rangle_{k.out} = \sum_{in=0}^{l} \phi_{k.out.in} \langle M \rangle_
 where $l$ is the number of input vectors, $\phi_{k.out.in} \in \mathbb{R}$ are the learnable parameters, $in$ and $out$ denote input and output channels, and $M \rangle_{k.in}$ is the grade-$k$ component of the input multivector $M_{in}$.
 
 
-### Equivariance of Grade Projections
+### Equivariance of Linear Layers for Multivectors
 
-The Clifford group has several important properties and theorems associated with it (Liu et al., 2024):
+In Clifford algebra, a multivector can be composed of various grades, such as scalars, vectors, bivectors, and trivectors. We aim to show that a multivector linear layer is equivariant to rotations (this also works for reflections).
 
-**Theorem (All grade projections are Clifford group equivariant)** \
-For $w \in \Gamma(\mathbb{R}^d, q)$ and $x \in \text{Cl}(\mathbb{R}^d, q)$ with $k = 0, \ldots, d$, the following equivariance property holds:
-$$\rho(w) \left( x^{(k)} \right) = \left( \rho(w)(x) \right)^{(k)}$$
+Let's consider a Clifford vector $\mathbf{M}$ represented as:
+$$\mathbf{M} = \alpha \vec{V}_1 + \beta \vec{V}_2 + \gamma \vec{U}_1 + \delta \vec{U}_2$$
 
-This theorem states that applying a Clifford group transformation $\rho(w)$ to a specific grade component $x^{(k)}$ of a multivector $x$ is equivalent to applying the transformation to the entire multivector $x$ and then projecting the result onto the same grade.
+Here, $\alpha, \beta, \gamma, \delta$ are scalars (weights in the MVlinear operator), $\vec{V}_1, \vec{V}_2$ are vectors, and $\vec{U}_1, \vec{U}_2$ are bivectors. 1 and 2 refers to the clifford vector each belongs to (so $\vec{V}_1$ and $\vec{U}_1$ are parts of the same clifford vector.
 
+To prove that the Clifford vector is rotation equivariant for $R$, we need to show that applying the rotation to the entire vector $\mathbf{M}$ yields the same result as rotating each component individually and then combining them.
+
+### Step-by-Step Proof
+
+1. **Initial combination of Clifford Vectors:**
+   $$\mathbf{M} = \alpha \vec{V}_1 + \beta \vec{V}_2 + \gamma \vec{U}_1 + \delta \vec{U}_2$$
+
+2. **Apply the Rotation Operator:**
+   $$R(\mathbf{M}) = R(\alpha \vec{V}_1 + \beta \vec{V}_2 + \gamma \vec{U}_1 + \delta \vec{U}_2)$$
+
+4. **Distribute the Rotation Operator Using Linearity:**
+   $$R(\alpha \vec{V}_1 + \beta \vec{V}_2 + \gamma \vec{U}_1 + \delta \vec{U}_2) = \alpha R(\vec{V}_1) + \beta R(\vec{V}_2) + \gamma R(\vec{U}_1) + \delta R(\vec{U}_2)$$
+   (This is possible because the rotation is a linear operation)
+
+5. **Combine Rotated Components:**
+   Let’s denote the rotated Clifford vector as $\mathbf{M}'$:
+   $$\mathbf{M}' = \alpha R(\vec{V}_1) + \beta R(\vec{V}_2) + \gamma R(\vec{U}_1) + \delta R(\vec{U}_2)$$
+
+Since:
+$$\mathbf{M}' = R(\mathbf{M})$$
+
+### Conclusion
+
+This demonstrates that the The multivector linear layer is equivariant for the Clifford vector \( \mathbf{M} \). It shows that applying the rotation to the entire vector is equivalent to applying the rotation to each component individually and then combining the results. This property is crucial in understanding how rotations affect multivectors in Clifford algebra, ensuring that the geometric structure is preserved under rotation.
 
 By utilizing grade projections in the linear layers, GAST can precisely transform each component of a multivector according to its grade. This approach ensures that the geometric properties of the data are preserved and that the model can capture complex interactions within the data. This capability is crucial for maintaining equivariance and achieving high performance in tasks that involve geometric data.
 
