@@ -342,7 +342,7 @@ Moreover, while the GAST model demonstrated strong performance in capturing part
 Add dataset eval and add scalars separate!! COEN
   
 ### Future Work 
-Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model.
+Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model. COEN
 
 Furthermore, exploring more advanced and diverse hyperparameter optimization techniques could lead to better model configurations and improved performance. Techniques such as Bayesian optimization or reinforcement learning-based hyperparameter tuning might offer more efficient and effective ways to search the hyperparameter space.
 
