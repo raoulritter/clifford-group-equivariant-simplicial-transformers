@@ -338,7 +338,7 @@ To validate generalization, the saved best model was evaluated on the test datas
 
 ## Results
 
-To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAST) model, we applied it to a three-dimensional N-body problem dataset, a fundamental challenge in physics that involves predicting the motions of particles interacting due to their charges, velocities, and locations in 3D space. We compared three different models: the Node Only Model, the Normal Standard Model, and the Model with Edges as Zeros. Each model was assessed based on its test loss to determine its accuracy and effectiveness in capturing the complex interactions within the dataset. The test losses for each model are summarized in Table 1. (TODO COEN: Table -> nice graph?)
+To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAST) model, we applied it to a three-dimensional N-body problem dataset, a fundamental challenge in physics that involves predicting the motions of particles interacting due to their charges, velocities, and locations in 3D space. We compared three different models: the Node Only Model, the Normal Standard Model, and the Model with Edges as Zeros. Each model was assessed based on its test loss to determine its accuracy and effectiveness in capturing the complex interactions within the dataset. The test losses for each model are summarized in Figure 1.
 
 
 <div align="center">
