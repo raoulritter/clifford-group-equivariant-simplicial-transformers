@@ -263,9 +263,9 @@ The adjacency can be defined in terms of the simplicial structure (e.g., sharing
 This architecture is designed to leverage the mathematical properties of Clifford algebra to process and interpret higher-dimensional relationships in data. The architecture consists of two main parts: Embedding Module and Transformer Layers (GAST Layers).
 
 <!-- ![Architecture Diagram](media/GAST_diagram.png) -->
-| <img src="media/GAST_diagram.png" alt="Architecture Diagram" width="65%"> |
+| <img src="media/GAST_architecture.png" alt="Architecture Diagram" width="65%"> |
 |:--:|
-
+| GAST architecture |
 
 
 #### 3.1 Embedding- Preparing N-Body
@@ -282,7 +282,20 @@ After making the embeddings, node and edge embeddings are concatenated and fed t
 
 The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block ([Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762)), with the difference that only equivariant operations are being used.
 
-TODO: add architecture pictures
+| <img src="media/attention_layer.png" alt="Architecture Diagram" width="65%"> |
+|:--:|
+| Attention Layer |
+
+| <img src="media/Geometric_Layer.png" alt="Architecture Diagram" width="65%"> |
+|:--:|
+| Geometric Layer |
+
+| <img src="media/Two_Layer_MLP.png" alt="Architecture Diagram" width="65%"> |
+|:--:|
+| Two Layer MLP |
+
+
+
 
  ## 4. Methodology
 In this study, we investigate the significance of edge information in enhancing the performance of NBodyTransformer models tasked with predicting future positions within such systems. Three distinct configurations were rigorously tested, each shedding light on the role of edge information:
