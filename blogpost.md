@@ -195,7 +195,7 @@ $$\mathbf{M}' = R(\mathbf{M})$$
 
 ### Conclusion
 
-This demonstrates that the The multivector linear layer is equivariant for the Clifford vector \( \mathbf{M} \). It shows that applying the rotation to the entire vector is equivalent to applying the rotation to each component individually and then combining the results. This property is crucial in understanding how rotations affect multivectors in Clifford algebra, ensuring that the geometric structure is preserved under rotation.
+This demonstrates that the The multivector linear layer is equivariant for the Clifford vector $$(\mathbf{M})$$. It shows that applying the rotation to the entire vector is equivalent to applying the rotation to each component individually and then combining the results. This property is crucial in understanding how rotations affect multivectors in Clifford algebra, ensuring that the geometric structure is preserved under rotation.
 
 By utilizing grade projections in the linear layers, GAST can precisely transform each component of a multivector according to its grade. This approach ensures that the geometric properties of the data are preserved and that the model can capture complex interactions within the data. This capability is crucial for maintaining equivariance and achieving high performance in tasks that involve geometric data.
 
