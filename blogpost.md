@@ -335,7 +335,7 @@ To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAS
 
 
 <div align="center">
-  <img src="./media/loss.png" alt="Results Table" >
+  <img src="./media/test_loss.png" alt="Results Table" >
 </div>
 
 
