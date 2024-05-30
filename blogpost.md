@@ -55,39 +55,15 @@ Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have
 Despite these advancements, both EMPSNs and CGENNs face challenges in balancing computational efficiency with the need for rich structural information. Ensuring that these networks can scale while preserving the intricate details of the data remains a critical area of research. Our work aims to build on these foundations by integrating the strengths of geometric algebra and transformer architectures to develop a novel approach that effectively addresses these challenges, offering enhanced scalability, expressivity, and practical utility in complex graph analysis.
 
 
-**(3) Transformer Architecture**
+**(3) Transformer Models**
 
 The Transformer architecture has revolutionized many areas of machine learning due to its ability to capture long-range dependencies and its inherent scalability. Transformers excel in processing sequential data and have been effectively adapted for various tasks, including natural language processing, computer vision, and more recently, graph-based learning. Incorporating simplicial message passing into Transformers provides a powerful framework for modeling complex geometric structures, enabling the capture of rich, higher-order interactions that traditional architectures may miss.
 
 The Geometric Algebra Transformer (GATR), proposed by Brehmer et al. (2023), employs geometric algebra to achieve equivariance with enhanced efficiency. GATR leverages the rich algebraic structure of geometric algebra to perform transformations that are equivariant by design, thus maintaining the geometric integrity of the data throughout the learning process. This approach ensures that the learned representations respect the symmetries and invariances inherent in the data, which is particularly important for applications involving geometric transformations.
 
-GATR's use of geometric algebra allows it to manage complex geometric structures more naturally and efficiently than traditional methods. By encoding geometric transformations directly into the algebraic framework, GATR can achieve a high degree of expressivity while maintaining computational efficiency. This makes it well-suited for tasks requiring the modeling of intricate geometric relationships, such as those found in molecular chemistry and structural biology.
-
-Simplicial Transformers with Clifford Algebra
 Previous research has also explored simplicial transformers using Clifford algebra to define triangular attention via geometric products (Clift et al., 2019). These methods extend the attention mechanism to higher-order simplices, allowing for the capture of more complex interactions within the graph. The geometric product in Clifford algebra provides a natural way to handle higher-dimensional simplices, facilitating the modeling of multi-body interactions that are crucial in many scientific applications.
 
 However, the computational complexity of these models remains a significant challenge, particularly when applied to large-scale datasets. The extension to higher-order simplices typically results in an $O(n^3)$ complexity, making these methods less practical for real-time or large-scale applications. Moreover, while these models use the geometric product to define interactions among more than two nodes, they do not achieve full equivariance. This lack of equivariance can limit their ability to generalize across different geometric transformations, reducing their overall effectiveness.
-
-
-
-**Integrating the Three Features in GAST**
-
-Our Geometric Algebra Simplicial Transformer (GAST) model integrates three key features—Simplicial Message Passing, Equivariance, and the Transformer architecture—into a cohesive and scalable framework designed to address the limitations of traditional Message Passing Neural Networks (MPNNs).
-
-Simplicial Message Passing
-GAST captures higher-order interactions within graph data by incorporating simplicial complexes. This enables the model to represent multi-level dependencies, from nodes (0-simplices) to edges (1-simplices) and higher-order structures, capturing intricate topologies essential for accurately modeling complex systems such as molecular structures in chemistry and social networks.
-
-Equivariance
-By embedding vectors in Clifford space and using equivariant operators, GAST maintains the symmetries of the input data. This ensures that geometric properties are preserved across transformations, enhancing the model’s ability to generalize and handle tasks involving precise geometric reasoning.
-
-Transformer Architecture
-The Transformer architecture allows GAST to capture long-range dependencies and scale efficiently with large datasets. By integrating the transformer with simplicial message passing and equivariant operators, GAST leverages the flexibility and scalability of transformers to model complex geometric interactions. The self-attention mechanism helps dynamically weigh the importance of different parts of the input data, capturing both local and global structures within the graph.
-
-Hierarchical Message Passing and Token Initialization
-GAST initiates tokens for higher-order simplices and implements hierarchical message passing, enabling nodes (0-simplices), edges (1-simplices), and higher-order structures to communicate within the transformer framework. This hierarchical approach effectively models multi-level dependencies and complex topologies.
-
-Practical Applications
-GAST’s integrated approach makes it ideal for various scientific fields. In polymer chemistry, it can model the 3D arrangements and interactions of atoms, providing insights into physical and chemical properties. In social sciences, GAST can analyze social networks, capturing relationships and group dynamics for applications like community detection and information diffusion analysis.
 
 By combining simplicial message passing, equivariance, and the transformer architecture, GAST offers a powerful, scalable model for complex geometric graph analysis, advancing the capabilities of neural networks in handling rich structural information in higher-order simplices.
 
