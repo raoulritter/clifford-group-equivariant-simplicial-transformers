@@ -230,7 +230,8 @@ $$
    Here, $\sigma$ is the logistic sigmoid function, and $a_m$ is a learnable scalar. This normalization ensures that the magnitudes of the elements are controlled, preventing numerical instabilities during the geometric product calculations.
 
 
-** Relating to Equivariance and Invariance
+**Relating to Equivariance and Invariance**
+
 Both operations are scalar products of the individual grades. Because the scalars are computed using the dot product of the grade with itself, this scalar is invariant to rotations and reflections. From the equivariance explanation for the linear layers for multivectors it follows that taking scalar multiples of individual grades in equivariant (we can see it as a linear layer between two vectors).
 
 #### 2.3.4 Simpicial Message passing
