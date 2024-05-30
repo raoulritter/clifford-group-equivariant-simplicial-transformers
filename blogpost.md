@@ -368,7 +368,7 @@ Finally, expanding the scope of the model's applications beyond the N-body probl
 
 
 ## Appendix
-### Training Procedure (should this go in the appendix?)
+### Training Procedure
 1. Hyperparameters
 - Input Dimension: 3
 - Model Dimension (d_model): 16
