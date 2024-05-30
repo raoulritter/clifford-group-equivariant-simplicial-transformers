@@ -200,8 +200,6 @@ By utilizing grade projections in the linear layers, GAST can precisely transfor
 
 #### 2.3.4 Normalization and Non-linearity
 
-**Non-Linearities**
-
 **Scalar Subspace Non-Linearities:**
    For elements in the scalar subspace $Cl(0)(V, q)$, traditional non-linear activation functions like ReLU (Rectified Linear Unit) are applied. This is because the scalar subspace is invariant under the Clifford group's action, meaning applying a non-linearity to scalars won't disrupt equivariance.
 
@@ -232,7 +230,7 @@ $$
    Here, $\sigma$ is the logistic sigmoid function, and $a_m$ is a learnable scalar. This normalization ensures that the magnitudes of the elements are controlled, preventing numerical instabilities during the geometric product calculations.
 
 
-## Relating to Equivariance and Invariance
+** Relating to Equivariance and Invariance
 Both operations are scalar products of the individual grades. Because the scalars are computed using the dot product of the grade with itself, this scalar is invariant to rotations and reflections. From the equivariance explanation for the linear layers for multivectors it follows that taking scalar multiples of individual grades in equivariant (we can see it as a linear layer between two vectors).
 
 #### 2.3.4 Simpicial Message passing
@@ -283,6 +281,7 @@ After making the embeddings, node and edge embeddings are concatenated and fed t
 
 The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block ([Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762)), with the difference that only equivariant operations are being used.
 
+TODO: add architecture pictures
 
  ## 4. Methodology
 In this study, we investigate the significance of edge information in enhancing the performance of NBodyTransformer models tasked with predicting future positions within such systems. Three distinct configurations were rigorously tested, each shedding light on the role of edge information:
