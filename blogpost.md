@@ -199,6 +199,42 @@ This demonstrates that the multivector linear layer is equivariant for the Cliff
 
 By utilizing grade projections in the linear layers, GAST can precisely transform each component of a multivector according to its grade. This approach ensures that the geometric properties of the data are preserved and that the model can capture complex interactions within the data. This capability is crucial for maintaining equivariance and achieving high performance in tasks that involve geometric data.
 
+#### 2.3.4 Normalization and Non-linearity
+
+**Non-Linearities**
+
+**Scalar Subspace Non-Linearities:**
+   For elements in the scalar subspace $Cl(0)(V, q)$, traditional non-linear activation functions like ReLU (Rectified Linear Unit) are applied. This is because the scalar subspace is invariant under the Clifford group's action, meaning applying a non-linearity to scalars won't disrupt equivariance.
+
+   $$x^{(0)} \mapsto \text{ReLU}(x^{(0)})$$
+
+**Non-Scalar Subspace Non-Linearities:**
+   For elements in higher-grade subspaces (like vectors, bivectors, etc.), a gating mechanism is used, where the activation function modifies the element based on its magnitude while preserving directionality and equivariance. Specifically, the non-linearity applied is a sigmoid function of the form $\sigma(\beta n^2)$, where $\beta$ is a learnable parameter, and $n$ is the norm.
+
+$$\sigma(\beta n^2) = \frac{1}{\exp(-\beta n^2) + 1}$$
+
+   Thus, for each grade $m$:
+   
+$$x^{(m)} \mapsto \sigma(\beta_m \bar{q}(x^{(m)})) x^{(m)}$$
+
+   Here, $\beta_m$ is a learnable parameter specific to grade $m$, and $\bar{q}$ is the extended quadratic form, which is invariant under the Clifford group's action. This ensures that the non-linearity preserves the equivariance property.
+
+**Normalization**
+
+Normalization is crucial for ensuring numerical stability and maintaining the properties of the geometric product. CGENNs implement a layer-wise normalization scheme:
+
+**Subspace Normalization:**
+   Each multivector subspace $Cl(m)(V, q)$ is normalized before computing geometric products. This normalization involves scaling the elements and multiplying by a learnable parameter $\alpha$:
+
+$$
+x^{(m)} \mapsto \alpha_m \frac{x^{(m)}}{\sigma(a_m)(\bar{q}(x^{(m)}) - 1) + 1}
+$$
+
+   Here, $\sigma$ is the logistic sigmoid function, and $a_m$ is a learnable scalar. This normalization ensures that the magnitudes of the elements are controlled, preventing numerical instabilities during the geometric product calculations.
+
+
+## Relating to Equivariance and Invariance
+Both operations are scalar products of the individual grades. Because the scalars are computed using the dot product of the grade with itself, this scalar is invariant to rotations and reflections. From the equivariance explanation for the linear layers for multivectors it follows that taking scalar multiples of individual grades in equivariant (we can see it as a linear layer between two vectors).
 
 #### 2.3.4 Simpicial Message passing
 | <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="50%"> |
