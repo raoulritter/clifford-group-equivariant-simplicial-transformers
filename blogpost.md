@@ -281,7 +281,7 @@ After making the embeddings, node and edge embeddings are concatenated and fed t
 
 #### 3.2 Transformer Layers 
 
-The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block [Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762), with the difference that only equivariant operations are being used.
+The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block ([Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762)), with the difference that only equivariant operations are being used.
 
 
  ## 4. Methodology
