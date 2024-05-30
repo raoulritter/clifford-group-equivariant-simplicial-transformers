@@ -5,9 +5,12 @@
 
 In this blog report, we introduce an extension to the domain of geometric deep learning: the Geometric Algebra Simplicial Transformer (GAST). Our research endeavors to enhance the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs) while maintaining equivariance, thereby facilitating efficient and scalable solutions for geometric graph data encompassing triangles and higher-order graph structures.  By successfully implementing our model on the three-dimensional N-body problem, we aim to establish a foundation for its broader application in disciplines such as physics, chemistry, robotics, and computer vision, thereby fostering significant progress across these fields.  
 
-| <img src="media/CSMPNs.png" alt="Equivariant Simplicial Networks" width="100%"> |
-|:--:|
-|[(Liu et al., 2024)](https://arxiv.org/abs/2402.10011)|
+<div align="center">
+  <img src="media/CSMPNs.png" alt="Equivariant Simplicial Networks" width="100%">
+  <br>
+  <a href="https://arxiv.org/abs/2402.10011">Liu et al., 2024</a>
+</div>
+
 
 ### 1.1 The Problem
 
@@ -18,9 +21,12 @@ Our solution, GAST, integrates Geometric/Clifford algebra with the Transformer a
 
 ### 1.2 The Dataset
 
-| <img src="media/nbody_gif.gif" alt="Nbody in 2D" width="40%"> |
-|:--:|
-|[(Medium, 2020)](https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9)|
+<div align="center">
+  <img src="media/nbody_gif.gif" alt="Nbody in 2D" width="40%">
+  <br>
+  <a href="https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9">Medium, 2020</a>
+</div>
+
 
 To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles that interact due to their charges, velocities, and locations in 3D space. The N-body problem is computationally intensive because the number of pairwise interactions grows exponentially with the number of particles. Each particle interacts with every other particle, leading to a combinatorial explosion of interactions that need to be calculated. Furthermore, high precision is required to accurately model these interactions over time, as small errors can compound and lead to significant deviations in the predicted motions.
 
@@ -86,9 +92,11 @@ Clifford algebra consists of multiple subspaces, each representing different geo
 
 By embedding data into these subspaces, we can capture a wide range of geometric and non-geometric properties. Besides that, lifting our input into Clifford space enables us to do certain operations while remaining equivariant. 
 
-| <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%"> |
-|:--:|
-|[Ruhe et al. (2023)](https://arxiv.org/abs/2302.06594)|
+<div align="center">
+  <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%">
+  <br>
+  <a href="https://arxiv.org/abs/2302.06594">Ruhe et al. (2023)</a>
+</div>
 
 #### 2.3.2  Geometric Products
 
@@ -237,9 +245,11 @@ $$
 Both operations are scalar products of the individual grades. Because the scalars are computed using the dot product of the grade with itself, this scalar is invariant to rotations and reflections. From the equivariance explanation for the linear layers for multivectors it follows that taking scalar multiples of individual grades in equivariant (we can see it as a linear layer between two vectors).
 
 #### 2.3.4 Simpicial Message passing
-| <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="50%"> |
-| :--: |
-| [(Wikipedia, n.d.)](https://en.wikipedia.org/wiki/Simplicial_complex) |
+<div align="center">
+  <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="50%">
+  <br>
+  <a href="https://en.wikipedia.org/wiki/Simplicial_complex">Wikipedia, n.d.</a>
+</div>
 
 
 A simplicial graph (or simplicial complex) is a higher-dimensional generalization of a graph where not only vertices (0-simplices) and edges (1-simplices) are considered, but also higher-dimensional simplices like triangles (2-simplices), tetrahedrons (3-simplices), and so on. These simplices are connected in a manner that preserves their topological relationships.
@@ -264,10 +274,12 @@ The adjacency can be defined in terms of the simplicial structure (e.g., sharing
 ### 3. Architecture
 This architecture is designed to leverage the mathematical properties of Clifford algebra to process and interpret higher-dimensional relationships in data. The architecture consists of two main parts: Embedding Module and Transformer Layers (GAST Layers).
 
-<!-- ![Architecture Diagram](media/GAST_diagram.png) -->
-| <img src="media/GAST_architecture.png" alt="Architecture Diagram" width="45%"> |
-|:--:|
-| GAST architecture |
+<div align="center">
+  <img src="media/GAST_architecture.png" alt="Architecture Diagram" width="45%">
+  <br>
+  GAST architecture
+</div>
+
 
 
 #### 3.1 Embedding- Preparing N-Body
@@ -283,7 +295,7 @@ After making the embeddings, node and edge embeddings are concatenated and fed t
 #### 3.2 Transformer Layers 
 
 The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block ([Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762)), with the difference that only equivariant operations are being used.
-| <img src="media/attention_layer.png" alt="Attention Layer" width="100%"> | <img src="media/Geometric_Layer.png" alt="Geometric Layer" width="50%"> <img src="media/Two_Layer_MLP.png" alt="Two Layer MLP" width="50%"> |
+|  <img src="media/attention_layer.png" alt="Attention Layer" width="100%"> | <img src="media/Geometric_Layer.png" alt="Geometric Layer" width="50%"> <img src="media/Two_Layer_MLP.png" alt="Two Layer MLP" width="50%"> |
 |:--:|:--:|
 | Attention Layer | Geometric Layer and Two Layer MLP |
 
