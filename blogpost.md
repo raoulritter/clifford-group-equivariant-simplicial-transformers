@@ -17,9 +17,11 @@ Our solution, GAST, integrates Geometric/Clifford algebra with the Transformer a
 
 
 ### 1.2 The Dataset
+
 | <img src="media/nbody_gif.gif" alt="Nbody in 2D" width="40%"> |
 |:--:|
 |[(Medium, 2020)](https://medium.com/swlh/create-your-own-n-body-simulation-with-python-f417234885e9)|
+
 To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles that interact due to their charges, velocities, and locations in 3D space. The N-body problem is computationally intensive because the number of pairwise interactions grows exponentially with the number of particles. Each particle interacts with every other particle, leading to a combinatorial explosion of interactions that need to be calculated. Furthermore, high precision is required to accurately model these interactions over time, as small errors can compound and lead to significant deviations in the predicted motions.
 
 Machine learning, particularly neural networks, offers a promising solution by approximating complex interactions more efficiently. Neural networks can learn from data to predict the outcomes of interactions, thus handling large datasets and making scalable, faster predictions. This approach allows for the modeling of intricate systems that would be computationally prohibitive with traditional methods.
@@ -263,7 +265,7 @@ The adjacency can be defined in terms of the simplicial structure (e.g., sharing
 This architecture is designed to leverage the mathematical properties of Clifford algebra to process and interpret higher-dimensional relationships in data. The architecture consists of two main parts: Embedding Module and Transformer Layers (GAST Layers).
 
 <!-- ![Architecture Diagram](media/GAST_diagram.png) -->
-| <img src="media/GAST_architecture.png" alt="Architecture Diagram" width="65%"> |
+| <img src="media/GAST_architecture.png" alt="Architecture Diagram" width="45%"> |
 |:--:|
 | GAST architecture |
 
@@ -281,20 +283,9 @@ After making the embeddings, node and edge embeddings are concatenated and fed t
 #### 3.2 Transformer Layers 
 
 The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block ([Vaswani, Ashish, et al., 2017.](https://arxiv.org/pdf/1706.03762)), with the difference that only equivariant operations are being used.
-
-| <img src="media/attention_layer.png" alt="Architecture Diagram" width="65%"> |
-|:--:|
-| Attention Layer |
-
-| <img src="media/Geometric_Layer.png" alt="Architecture Diagram" width="65%"> |
-|:--:|
-| Geometric Layer |
-
-| <img src="media/Two_Layer_MLP.png" alt="Architecture Diagram" width="65%"> |
-|:--:|
-| Two Layer MLP |
-
-
+| <img src="media/attention_layer.png" alt="Attention Layer" width="100%"> | <img src="media/Geometric_Layer.png" alt="Geometric Layer" width="50%"> <img src="media/Two_Layer_MLP.png" alt="Two Layer MLP" width="50%"> |
+|:--:|:--:|
+| Attention Layer | Geometric Layer and Two Layer MLP |
 
 
  ## 4. Methodology
