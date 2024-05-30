@@ -3,77 +3,115 @@
 
 
 ## 1. Introduction 
-### 1.1 Intro to project
+
 In this blog report, we introduce an extension to the domain of geometric deep learning: the Geometric Algebra Simplicial Transformer (GAST). Our research endeavors to enhance the expressivity of Transformers to match that of Simplicial Message Passing Neural Networks (MPNNs) while maintaining equivariance, thereby facilitating efficient and scalable solutions for geometric graph data encompassing triangles and higher-order graph structures.  By successfully implementing our model on the three-dimensional N-body problem, we aim to establish a foundation for its broader application in disciplines such as physics, chemistry, robotics, and computer vision, thereby fostering significant progress across these fields.  
 
 | <img src="media/CSMPNs.png" alt="Equivariant Simplicial Networks" width="100%"> |
 |:--:|
 |(Liu et al., 2024)|
 
-### 1.2 The Problem
-In various fields such as chemistry, physics, biology, and social sciences, data can be represented as a graph. The graph structures often contain geometric information and higher order simplicial structures, which can present significant challenges for traditional computational models. For polymer chains in chemistry the geometric information of atoms (0-simplices) can be locations in 3D space. For social networks people (0-simplices) can have locations on a map. Atoms and people can also contain non-geometric information such as charge in the case of atoms or haircolour for humans. Examples of higher order simplicial structures can be bonds between two (1-simplices) or more atoms (higher order-simplices) or friendships (1-simplices) and friendgroups in social networks (higher order simplices). In the case of social networks, understanding these higher-order interactions is essential for applications such as community detection, information diffusion, and recommendation systems. For polymers, modeling the interactions between atoms accurately is crucial for understanding and predicting the physical and chemical properties, which has implications for material science, drug design, and nanotechnology.
+### 1.1 The Problem
+
+In scientific fields like chemistry, physics, biology, and social sciences, data is often represented using graph structures. These graphs contain geometric information and higher-order simplicial structures, which pose challenges for traditional computational models. For example, in polymer chemistry, atoms (0-simplices) are located in three-dimensional space, while in social networks, individuals (0-simplices) can be mapped geographically. Both atoms and people may also have non-geometric attributes, such as atomic charge or hair color.
+
+Higher-order simplicial structures represent more complex interactions, such as bonds between atoms (1-simplices) in chemistry, and friendships or social groups in social networks. Understanding these interactions is crucial for applications like community detection and recommendation systems in social networks, and for predicting physical and chemical properties of polymers in materials science, drug design, and nanotechnology.
+
+Despite the importance of these complex structures, traditional Message Passing Neural Networks (MPNNs) struggle to utilize geometric information and higher-order simplicial structures. MPNNs are limited to pairwise interactions and face scalability issues as graph size increases. Scalability in Graph Neural Networks (GNNs) remains challenging for larger graphs due to higher computational demands and the complexity of maintaining effective neighborhood aggregations. This is especially problematic in applications like the three-dimensional N-body problem, where interactions grow exponentially with dimensionality (O(n^2)). Traditional MPNNs are constrained to the expressiveness of the Weisfeiler-Lehman (1-WL) test, unable to detect complex graph structures like higher-dimensional triangles, as noted by \citeA{xu2018powerful}.
+
+Our solution, GAST, integrates Geometric/Clifford algebra with the Transformer architecture to address these limitations. GAST facilitates the incorporation of simplicial structures within graph data while preserving scalability and equivariance to geometric transformations. Our model augments Transformers to rival or exceed the expressivity of E(n) equivariant message-passing simplicial networks (EMPSNs) while maintaining computational efficiency. This is achieved by developing an equivariant Transformer utilizing Clifford vectors and equivariant operators. Furthermore, we elevate the graph to the simplicial complex by initiating tokens for 1-simplices (and potentially higher-order simplices) that exclusively communicate with adjacent structures, in addition to node tokens that communicate with all nodes, akin to conventional Transformers.
 
 
-Despite the importance of these complex structures, traditional Message Passing Neural Networks (MPNNs) fall short in using geometric information and higher-order simplicial structures. MPNNs are limited to pairwise interactions and struggle with scalability as the size of the graphs increase. Scalability in Graph Neural Networks (GNNs) remains a significant challenge when applied to larger graphs, due to increased computational demands and the complexity of maintaining effective neighborhood aggregations across extensive network structures. This limitation becomes even more pronounced in applications such as the three-dimensional N-body problem--an example of a fully connected graph--where interactions grow exponentially with dimensionality ( O(n^2) ).
-
-
-Our solution, GAST, leverages Geometric/Clifford algebra in combination with the Transformer architecture to surpass these constraints, enabling the use of simplicial structure within graph data, while maintaining scalability and equivariance to geometric transformations. Our model equips Transformers with the capability to rival and potentially surpass the expressivity of E(n) equivariant message passing simplicial networks (EMPSNs) while maintaining computational efficiency. We do this by making Transformers equivariant through the use of clifford vectors and equivariant operators. Next to that, we lift the graph to the simplicial complex by initiating tokens for the 1- (and possibly higher) simplices, that can only pass messages to -and receive from- their adjacent structures. This is additional to the tokens for nodes, which can pass and receive from all nodes, just as in regular Transformers.
-
-
-
-### 1.3 The Dataset
+### 1.2 The Dataset
 | <img src="media/nbody_gif.gif" alt="Nbody in 2D" width="40%"> |
 |:--:|
 |(Medium, 2020)|
-To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles interacting with each other because of their charges, velocities and locations in 3D space. The N-body problem is can be computationally intensive due to the exponential growth of pairwise interactions and the high precision required, making traditional algorithms inefficient for large systems. Machine learning, particularly neural networks, becomes a necessity as it can approximate complex interactions more efficiently, allowing for scalable and faster predictions with large datasets. This choice of dataset is strategic. On one hand it presents a classic challenge in physics. On the other hand, it is used in related studies and therefore offers a robust platform for testing our model against established benchmarks. It allows us to critically assess the effectiveness of our approach in a well-understood scientific context.
+To empirically evaluate our architecture, we apply it to a three-dimensional N-body problem. The N-body problem, a fundamental challenge in physics, involves predicting the motions of a group of particles that interact due to their charges, velocities, and locations in 3D space. This problem arises in various scientific fields, including astrophysics, molecular dynamics, and plasma physics. For example, it can describe the gravitational interactions of celestial bodies in an astronomical system, the electrostatic interactions of charged particles in a plasma, or the forces between atoms in a molecule.
+
+The N-body problem is computationally intensive because the number of pairwise interactions grows exponentially with the number of particles. Each particle interacts with every other particle, leading to a combinatorial explosion of interactions that need to be calculated. Furthermore, high precision is required to accurately model these interactions over time, as small errors can compound and lead to significant deviations in the predicted motions.
+
+Traditional algorithms, such as direct summation methods, often become inefficient for large systems due to their O(n^2) complexity, where n is the number of particles. More sophisticated methods, like tree codes and fast multipole methods, have been developed to reduce computational complexity, but they still face limitations in handling very large systems and achieving the necessary precision.
+
+Machine learning, particularly neural networks, offers a promising solution by approximating complex interactions more efficiently. Neural networks can learn from data to predict the outcomes of interactions, thus handling large datasets and making scalable, faster predictions. This approach allows for the modeling of intricate systems that would be computationally prohibitive with traditional methods.
+
+The choice of the N-body problem for our empirical evaluation is strategic. It presents a classic challenge in physics, widely recognized and studied, making it an ideal benchmark for testing our model. By applying our GAST architecture to the N-body problem, we can critically assess its effectiveness in a well-understood scientific context. This dataset allows us to compare our results against established benchmarks and related studies, providing a robust platform for evaluating the performance and scalability of our approach.
+
+We acknowledge that the dataset presents a limitation, as it lacks inherent simplicial structure. In our case, although we generate edges between all bodies, these structures do not encapsulate information beyond what is already contained in the nodes/bodies themselves. For instance, in scenarios such as teams with shared norms or rules, the collective properties differ from the individual characteristics of the members.
 
 
-We do acknowledge that the dataset also has a downside. Namely, it does not have inherent simplicial structure. Although we create these -edges between all bodies in our case- these structures do not contain information that is not present in the nodes/bodies themselves. An example of where this would be the case are shared norms/rules in teams that are different from the individual norms of people. We can, however, create unique edge information in our dataset by modeling the forces between nodes as an edge attribute, derived from charges of individual nodes. We can then discard the charge information in nodes to provide the edges with information that is not present in the nodes themselves. Because of limited time we leave this for further research.
+### 1.3 Aim and Research Question
+
+The objective of this study is to demonstrate that GAST not only advances the theoretical capabilities of neural networks in utilizing complex graph structures but also underscores its practical utility across a range of scientific applications. Specifically, we aim to investigate whether the inclusion of both edges and nodes embeddings in GAST results in improved accuracy compared to models that utilize only node embeddings. This investigation will help assess the benefit of incorporating simplicial structure information within a more efficient architecture like a Transformer. By addressing this research question, we aim to substantiate the theoretical advancements and practical benefits of GAST in the context of neural network applications for complex graph analysis.
 
 
-### 1.4 The Aim
-Our objective is to demonstrate that GAST not only advances the theoretical capabilities of neural networks in using complex graph structures but also underscores its practical utility in a range of scientific applications. We anticipate that, compared to previous models, our approach will yield an improvement in accuracy.
+## 2. Preliminaries and Related Work
+### 2.1 Related Work
 
+Our project is informed by a series of advancements in the domain of graph neural networks and transformers, each addressing various limitations but also introducing new challenges. The related work can be organized by the three key features of our GAST model: (1) Simplicial Message Passing, (2) Equivariance, and (3) the Transformer architecture.
 
-### 1.5 Related Work
+**(1) Simplicial Message Passing Networks**
 
-Our project is informed by a series of pivotal advancements in the domain of graph neural networks and transformers, each addressing various limitations but also introducing new challenges. The related work can be organized by the three key features of our GAST model: (1) Simplicial Message Passing, (2) Equivariance, and (3) the Transformer architecture.
+Traditional Message Passing Neural Networks (MPNNs) are foundational yet constrained by the Weisfeiler-Lehman (1-WL) test, which limits their ability to detect complex structures such as higher-dimensional triangles. Xu et al., 2019, highlighted that MPNNs, while powerful, can only capture pairwise interactions effectively, thereby missing out on the richer structural information present in higher-order simplices. This limitation is particularly critical in applications requiring the modeling of multi-body interactions and complex topologies, such as in molecular chemistry and social network analysis.
 
-**(1) Simplicial Message Passing**
+Efforts to extend MPNN capabilities through Simplicial Message Passing Networks (SMPNs) have shown promise. By explicitly incorporating higher-order simplicial complexes into the message-passing framework, these networks can capture interactions at multiple levels of granularity, enabling more expressive representations of the data (Bodnar et al., 2021). However, these approaches often require extensive pre-computation of simplicial complexes, which can limit their scalability and applicability to large-scale datasets. Additionally, SMPNs can suffer from increased computational complexity and memory requirements due to the need to manage and process higher-dimensional structures, making them less efficient for real-time applications.
 
-Traditional Message Passing Neural Networks (MPNNs) are foundational yet constrained by the Weisfeiler-Lehman (1-WL) test, which limits their ability to detect complex structures such as higher-dimensional triangles. Xu et al., 2019 highlighted that MPNNs, while powerful, can only capture pairwise interactions effectively, thereby missing out on the richer structural information present in higher-order simplices. This limitation is particularly critical in applications requiring the modeling of multi-body interactions and complex topologies, such as in molecular chemistry and social network analysis.
+**(2) Equivariant Neural Networks**
 
-Efforts to extend MPNN capabilities through Simplicial Message Passing Networks have shown promise. By explicitly incorporating higher-order simplicial complexes into the message-passing framework, these networks can capture interactions at multiple levels of granularity, enabling more expressive representations of the data (Bodnar et al., 2021). However, these approaches often require extensive pre-computation of simplicial complexes, which can limit their scalability and applicability to large-scale datasets.
+Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al. (2023) demonstrated that EMPSNs can effectively handle higher-dimensional simplices by leveraging E(n) equivariant message passing. This allows EMPSNs to capture complex interactions within data that traditional MPNNs might miss. However, these networks often rely on manually calculated geometric data, which can impede scalability and efficiency, particularly when dealing with large and dynamically changing datasets.
 
-**(2) Equivariance**
+Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have significantly improved the handling of geometric transformations and complex structures. By utilizing steerable Clifford algebra, CGENNs achieve equivariance in a more flexible and scalable manner (Ruhe et al., 2023; Liu et al., 2024). These networks incorporate the principles of geometric algebra to handle transformations and interactions within data, providing a more robust framework for managing geometric complexities. CGENNs can efficiently process higher-dimensional data and maintain consistency under various transformations, thereby enhancing their applicability to a wide range of scientific and engineering problems.
 
-Equivariant Message Passing Simplicial Networks (EMPSNs) have emerged as a powerful extension to traditional MPNNs, capable of managing higher-dimensional simplices while maintaining equivariance. Equivariance ensures that the network's output respects the symmetries of the input data, which is crucial for applications involving geometric transformations. Eijkelboom et al.,
-2023 demonstrated that EMPSNs can effectively handle higher-dimensional simplices by leveraging E(n) equivariant message passing. However, these networks often depend on manually calculated geometric data, which can impede scalability and efficiency.
+EMPSNs and CGENNs represent significant advancements in the field of neural networks, particularly in their ability to handle complex geometric data and maintain equivariance. EMPSNs, by leveraging E(n) equivariant message passing, can model interactions within higher-dimensional simplices, thus offering a more detailed understanding of the underlying structures in the data. However, the dependency on pre-computed geometric data limits their scalability and real-time applicability.
 
-Further developments in Clifford Group Equivariant Neural Networks (CGENNs) have significantly improved the handling of geometric transformations and complex structures. By utilizing steerable Clifford algebra, CGENNs achieve equivariance in a more flexible and scalable manner  (Ruhe et al., 2023);  (Liu et al.,
-2024). These advancements highlight the potential of geometric algebra to enhance the expressivity and performance of equivariant neural networks.
+On the other hand, CGENNs address these limitations by incorporating steerable Clifford algebra, which provides a more flexible approach to achieving equivariance. This flexibility allows CGENNs to handle dynamic and large-scale datasets more efficiently. By enabling equivariant transformations in a scalable manner, CGENNs enhance the expressivity and performance of neural networks in applications involving complex geometric transformations.
+
+Despite these advancements, both EMPSNs and CGENNs face challenges in balancing computational efficiency with the need for rich structural information. Ensuring that these networks can scale while preserving the intricate details of the data remains a critical area of research. Our work aims to build on these foundations by integrating the strengths of geometric algebra and transformer architectures to develop a novel approach that effectively addresses these challenges, offering enhanced scalability, expressivity, and practical utility in complex graph analysis.
+
 
 **(3) Transformer Architecture**
 
-The Transformer architecture has revolutionized many areas of machine learning due to its ability to capture long-range dependencies and its inherent scalability. Incorporating simplicial message passing into Transformers provides a powerful framework for modeling complex geometric structures.
+The Transformer architecture has revolutionized many areas of machine learning due to its ability to capture long-range dependencies and its inherent scalability. Transformers excel in processing sequential data and have been effectively adapted for various tasks, including natural language processing, computer vision, and more recently, graph-based learning. Incorporating simplicial message passing into Transformers provides a powerful framework for modeling complex geometric structures, enabling the capture of rich, higher-order interactions that traditional architectures may miss.
 
-The Geometric Algebra Transformer (GATR) proposed by Brehmer (2023) employs geometric algebra to achieve equivariance with enhanced efficiency  (Brehmer et al., 2023). GATR leverages the rich algebraic structure of geometric algebra to perform transformations that are equivariant by design, thus maintaining the geometric integrity of the data throughout the learning process.
+Geometric Algebra Transformer (GATR)
+The Geometric Algebra Transformer (GATR), proposed by Brehmer et al. (2023), employs geometric algebra to achieve equivariance with enhanced efficiency. GATR leverages the rich algebraic structure of geometric algebra to perform transformations that are equivariant by design, thus maintaining the geometric integrity of the data throughout the learning process. This approach ensures that the learned representations respect the symmetries and invariances inherent in the data, which is particularly important for applications involving geometric transformations.
 
-Previous research has also explored simplicial transformers using Clifford algebra to define triangular attention via geometric products (Clift et al., 2019). These methods extend the attention mechanism to higher-order simplices, allowing for the capture of more complex interactions within the graph. However, the computational complexity of these models remains a significant challenge, particularly when applied to large-scale datasets ( $O(n^3)$ ). Although these methods do use the geometric product to define a product of more than two nodes, these models are not equivariant.
+GATR's use of geometric algebra allows it to manage complex geometric structures more naturally and efficiently than traditional methods. By encoding geometric transformations directly into the algebraic framework, GATR can achieve a high degree of expressivity while maintaining computational efficiency. This makes it well-suited for tasks requiring the modeling of intricate geometric relationships, such as those found in molecular chemistry and structural biology.
+
+Simplicial Transformers with Clifford Algebra
+Previous research has also explored simplicial transformers using Clifford algebra to define triangular attention via geometric products (Clift et al., 2019). These methods extend the attention mechanism to higher-order simplices, allowing for the capture of more complex interactions within the graph. The geometric product in Clifford algebra provides a natural way to handle higher-dimensional simplices, facilitating the modeling of multi-body interactions that are crucial in many scientific applications.
+
+However, the computational complexity of these models remains a significant challenge, particularly when applied to large-scale datasets. The extension to higher-order simplices typically results in an $O(n^3)$ complexity, making these methods less practical for real-time or large-scale applications. Moreover, while these models use the geometric product to define interactions among more than two nodes, they do not achieve full equivariance. This lack of equivariance can limit their ability to generalize across different geometric transformations, reducing their overall effectiveness.
+
 
 
 **Integrating the Three Features in GAST**
 
-Our Geometric Algebra Simplicial Transformer (GAST) model aims to integrate these three features -Simplicial Message Passing, Equivariance, and the Transformer architecture- into a cohesive and scalable framework. By embedding vectors in Clifford space and utilizing equivariant operators, GAST ensures that the geometric properties of the data are preserved. Additionally, by initiating tokens for higher-order simplices and implementing hierarchical message passing, GAST can capture intricate topologies and interactions within the graph data.
+Our Geometric Algebra Simplicial Transformer (GAST) model integrates three key features—Simplicial Message Passing, Equivariance, and the Transformer architecture—into a cohesive and scalable framework designed to address the limitations of traditional Message Passing Neural Networks (MPNNs).
 
-This integrated approach not only addresses the limitations of traditional MPNNs but also leverages the strengths of geometric algebra and transformers to create a powerful and scalable model capable of handling complex geometric graph data, such as polymer chains in chemistry and social networks in social sciences.
+Simplicial Message Passing
+GAST captures higher-order interactions within graph data by incorporating simplicial complexes. This enables the model to represent multi-level dependencies, from nodes (0-simplices) to edges (1-simplices) and higher-order structures, capturing intricate topologies essential for accurately modeling complex systems such as molecular structures in chemistry and social networks.
+
+Equivariance
+By embedding vectors in Clifford space and using equivariant operators, GAST maintains the symmetries of the input data. This ensures that geometric properties are preserved across transformations, enhancing the model’s ability to generalize and handle tasks involving precise geometric reasoning.
+
+Transformer Architecture
+The Transformer architecture allows GAST to capture long-range dependencies and scale efficiently with large datasets. By integrating the transformer with simplicial message passing and equivariant operators, GAST leverages the flexibility and scalability of transformers to model complex geometric interactions. The self-attention mechanism helps dynamically weigh the importance of different parts of the input data, capturing both local and global structures within the graph.
+
+Hierarchical Message Passing and Token Initialization
+GAST initiates tokens for higher-order simplices and implements hierarchical message passing, enabling nodes (0-simplices), edges (1-simplices), and higher-order structures to communicate within the transformer framework. This hierarchical approach effectively models multi-level dependencies and complex topologies.
+
+Practical Applications
+GAST’s integrated approach makes it ideal for various scientific fields. In polymer chemistry, it can model the 3D arrangements and interactions of atoms, providing insights into physical and chemical properties. In social sciences, GAST can analyze social networks, capturing relationships and group dynamics for applications like community detection and information diffusion analysis.
+
+By combining simplicial message passing, equivariance, and the transformer architecture, GAST offers a powerful, scalable model for complex geometric graph analysis, advancing the capabilities of neural networks in handling rich structural information in higher-order simplices.
 
 
-## 2. Background
-### 2.1 Clifford algebra
-Clifford algebra, also known as geometric algebra, is a mathematical framework used to model geometric transformations. It extends the capabilities of traditional algebraic systems such as complex numbers and quaternions. The most important part about using geometric algebra is that it provides a framework where we can easily manipulate vectors in an E(n) equivariant way. There are four main operations to achieve this: (1) embedding vectors in Clifford space, (2) performing geometric products, (3) the linear operation for multivectors and (4) normalization and nonlinearity. Below we provide a short introduction to each of these. For more extensive background on the matter, we would like to refer to the paper of [Ruhe et al. (2023)](https://arxiv.org/abs/2302.06594). Now for the explanation of Clifford algebra itself:
 
-#### (1) Embedding Vectors in Clifford Space
+
+###2.3 Preliminaries
+#### 2.3.1  Clifford algebra
+Clifford algebra, also known as geometric algebra, is a mathematical framework used to model geometric transformations. It extends the capabilities of traditional algebraic systems such as complex numbers and quaternions. The most important part about using geometric algebra is that it provides a framework where we can easily manipulate vectors in an O(n) equivariant way. There are four main operations to achieve this: (1) embedding vectors in Clifford space, (2) performing geometric products, (3) the linear operation for multivectors and (4) normalization and nonlinearity. Below we provide a short introduction to each of these. For more extensive background on the matter, we would like to refer to the paper of [Ruhe et al. (2023)](https://arxiv.org/abs/2302.06594). Now for the explanation of Clifford algebra itself:
+
+** (1) Embedding Vectors in Clifford Space **
 
 Clifford algebra consists of multiple subspaces, each representing different geometric entities. In three dimensions, these subspaces include:
 
@@ -82,13 +120,13 @@ Clifford algebra consists of multiple subspaces, each representing different geo
 - **Bivectors**: Represent oriented areas or planes, which can be used to describe rotations.
 - **Trivectors**: Represent volumes.
 
-By embedding data into these subspaces, we can capture a wide range of geometric and non-geometric properties.
+By embedding data into these subspaces, we can capture a wide range of geometric and non-geometric properties. Besides that, lifting our input into Clifford space enables us to do certain operations while remaining equivariant. 
 
 | <img src="media/clifford_vectors.png" alt="Clifford vectors visualized" width="100%"> |
 |:--:|
 |(Ruhe et al., 2023)|
 
-#### (2) Geometric Products
+#### 2.3.2  Geometric Products
 
 The geometric product is the fundamental operation in Clifford algebra, combining the properties of the dot product and the wedge product. For two vectors $v_1$ and $v_2$, the geometric product is defined as:
 $$v_1 v_2 = v_1 \cdot v_2 + v_1 \wedge v_2$$
@@ -126,7 +164,7 @@ Here, the result consists of:
 - A vector part along $e_2$: $(s_1 y_2 + y_1 s_2) e_2$,
 - A bivector part: $(x_1 y_2 - y_1 x_2) e_1 e_2$.
 
-The scalar part is just the result of the dot product, the rest of the wedge product. For more examples of the geometric product please refer to Brandstetter et al., 2023.
+The scalar part is the result of the dot product, the rest of the wedge product. For more examples of the geometric product please refer to Brandstetter et al., 2023.
 
 **Equivariance of the Dot Product:**
 
@@ -141,7 +179,7 @@ $$R(\mathbf{a} \wedge \mathbf{b}) = (R\mathbf{a}) \wedge (R\mathbf{b})$$
 This property holds because the wedge product captures the plane spanned by the vectors and its orientation, which are preserved under orthogonal transformations.
 
 
-#### (3) Linear Layers for Multivectors
+#### 2.3.3 Linear Layers for MultiVectors
 
 In the Geometric Algebra Simplicial Transformer (GAST), the linear layers are designed to operate on multivectors, leveraging the concept of grade projections to handle the various components of these multivectors effectively. This allows for precise manipulation and transformation of geometric data, ensuring that the model maintains equivariance and captures complex interactions.
 
@@ -193,14 +231,13 @@ To prove that the Clifford vector is rotation equivariant for $R$, we need to sh
 Since:
 $$\mathbf{M}' = R(\mathbf{M})$$
 
-### Conclusion
 
-This demonstrates that the The multivector linear layer is equivariant for the Clifford vector $(\mathbf{M})$. It shows that applying the rotation to the entire vector is equivalent to applying the rotation to each component individually and then combining the results. This property is crucial in understanding how rotations affect multivectors in Clifford algebra, ensuring that the geometric structure is preserved under rotation.
+This demonstrates that the multivector linear layer is equivariant for the Clifford vector $(\mathbf{M})$. It shows that applying the rotation to the entire vector is equivalent to applying the rotation to each component individually and then combining the results. This property is crucial in understanding how rotations affect multivectors in Clifford algebra, ensuring that the geometric structure is preserved under rotation.
 
 By utilizing grade projections in the linear layers, GAST can precisely transform each component of a multivector according to its grade. This approach ensures that the geometric properties of the data are preserved and that the model can capture complex interactions within the data. This capability is crucial for maintaining equivariance and achieving high performance in tasks that involve geometric data.
 
 
-#### 2.2 Simpicial Message passing
+#### 2.3.4 Simpicial Message passing
 | <img src="media/Simplicial_complex_example.png" alt="Simplicial Complexes visualized" width="50%"> |
 | :--: |
 | (Wikipedia, n.d.) |
@@ -235,101 +272,71 @@ This architecture is designed to leverage the mathematical properties of Cliffor
 
 
 
-#### 3.1 Embedding- Preparing N-Body (TODO COEN: a lot of unnecessary info here, compress)
-The embedding module serves as the initial stage where raw input data from the N-body dataset, including nodes and edges, is transformed into a suitable format for the transformer layers. This process involves several key steps, leveraging Clifford algebra to embed both scalar and vector features of each node in a geometric framework.
+#### 3.1 Embedding- Preparing N-Body
 
-The embedding process starts with mean centering, where the mean of the point cloud is calculated and subtracted from each point to ensure the data is normalized around the origin.  Next, the 3D tensor data is flattened into a 2D tensor, changing the shape from (batch, nodes, dim) to (batch * nodes, dim). Flattening simplifies the data structure, making it easier to process in subsequent layers. (TODO COEN: stuff like code things as this can go away)
+The embedding module is the initial stage where raw input data from the N-body dataset, information on nodes and edges, is transformed into a suitable input for the model. The embedding process starts with mean centering, where the mean of the point cloud is calculated and subtracted so that the positional data is centralized around the origin. By translating our input positions by subtracting the mean, we receive translation invariance, making our model E(n)-equivariant. 
 
-Each data point, including positions, velocities, and charges, is then embedded into the Clifford algebra space. Scalar features, such as charges are embedded in the subspace $CL^{0}(\mathbb{R^d, q}) = \mathbb{R}$, which is the subspace of all scalars. Vector features, such as positions and velocies are embedded in the subspace $CL^{1}(\mathbb{R^d, q}) = \mathbb{R^d}$ representing the vector subspace. (refer to David's paper TODO)
+The features of the bodies (nodes), including positions, velocities, and charges, are then lifted into the Clifford space. The invariants, such as charge, in the subspace $CL^{0}(\mathbb{R^d, q}) = \mathbb{R}$ and the covariants, such as positions and velocities, are embedded in the subspace $CL^{1}(\mathbb{R^d, q}) = \mathbb{R^d}$.
 
-Clifford algebra allows the representation of various geometric objects and transformations. This includes scalars (magnitude), vectors (direction), bivectors (areas), trivectors (volumes), and other higher-dimensional elements. Each of these elements is embedded in the corresponding subspace within the Clifford algebra. This embedding captures the essential geometric properties of the data, allowing for a richer representation of the underlying structures.
+For edge features, there are two options. One way is to embed all information as zeroes, making the model learn features on its own. Another way is by making the edge features by combining  (1) adding the features of the adjacent nodes together, together with (2) the geometric products of the adjacent nodes, and (3) the original edge attributes from the dataset. Everything in clifford space is then passed through a linear layer, nodes and edges separate.
 
-To manage the combined properties of positions and velocities, these are first stacked together and then embedded into the Clifford algebra. This step ensures that both types of vector features are integrated into a multivector representation. Scalar features, such as charges, are embedded separately into the scalar subspace of the Clifford algebra.
+After making the embeddings, node and edge embeddings are concatenated and fed through an equivariant TwoLayerMLP before entering the transformer layers.
 
-After embedding, the scalar and vector features are concatenated and transformed through an MVLinear layer, projecting the data into a Clifford algebra space, preparing them for the transformer layers.
+#### 3.2 Transformer Layers 
 
-#### 3.2 Transformer Layers (TODO COEN: Rewrite and complete this)
-The core of the GAST architecture is the transformer layers, specifically designed to handle multivector inputs and ensure equivariance. These layers include several components:
+The GAST transformer layers are designed to handle multivector inputs and ensure equivariance. The architecture is similar to the original transformer block (TODO: REF), with the difference that only equivariant operations are being used.
 
-First, the MVLayer Normalization normalizes multivector inputs. Next, the self-attention mechanism computes attention scores for the nodes and edges within the graph. Our attention mask within the self-attention  is initialized with zeros for a single batch, allowing nodes to attend to themselves and all other nodes within the same graph (TODO, this might have changed). Additionally, edges can attend to their corresponding nodes, and nodes can attend to their corresponding edges.
-The mask is converted to a float, with masked positions set to negative infinity and allowed positions set to zero. The diagonal of the attention mask is set to negative infinity to prevent self-loops. The self-attention layer calculates the attention weights using these masks and applies them to the value matrix to produce the attended output. This attended output is then combined with the original input through an Add & Norm layer. Following the self-attention mechanism, a Clifford algebra geometric product is applied. 
 
-The transformer block also includes a multilayer perceptron (MLP) that further processes the information. The MLP consists of MVLinear layers and  a MVSiLU activation function, introducing non-linearity. Finally, the output of the MLP is combined with the previous output of the geometric product through another Add & Norm layer. 
-
-## 4. Methodology
+ ## 4. Methodology
 In this study, we investigate the significance of edge information in enhancing the performance of NBodyTransformer models tasked with predicting future positions within such systems. Three distinct configurations were rigorously tested, each shedding light on the role of edge information:
 
-1. Model with Node and Edge Information: This configuration maintains edge information structures and edge attributes from data.
-2. Model Skipping Edge Information: Here, the model deliberately excludes edge information from its computations.
-3. Model with Edges Initialized as Zero Vectors: In this setup, edges are initialized as zero vectors. (TODO COEN: add additional explanation)
+1. Model Skipping Edge Information: Here, the model deliberately excludes edge information from its computations.
+2. Model with Node and Edge Information: This configuration takes into account the edge information as described earlier
+3. Model with Edges Initialized as Zero Vectors: In this setup, edges information is  initialized as zeros so that the model will learn these features by itself.
 
 We describe our methodology in the following section. 
 
-### 4.1 Dataset generation (TODO COEN: remove unnecesary info)
+### 4.1 Dataset generation 
 The dataset for [nobody](./src/lib/nbody_model/data) utilized in this study was generated using the [EGNN Repository](https://github.com/vgsatorras/egnn.git)
 using the default values: ```--num-train 10000 --seed 43 --sufix small```.
 
-The data consists of particle trajectories over a specified time interval. Each datapoint includes the initial positions $Loc \in \mathbb{R^{5 \times 3}}$, initial velocities $V \in \mathbb{R^{5 \times 3}}$ or $V \in \mathbb{R^{5 \times 2 \times 3}}$, adjacency matrices representing particle interactions $E \in \{ 1, 0\}^{2 \times 20}$ or $E \in \{ 1, 0\}^{5 \times 5}$(TODO which one is this correct? I get the first one when I debug the vectors in the preprocess function in clifford_embedding.py), and charge values (TODO COEN: IS THIS TRUE) $C \in \{ +1, -0\}^{5}$. Our model aims to predict the positions of particles after a certain time interval based on their initial states and interactions.
+The data consists of particle trajectories over a specified time interval. Each datapoint includes the initial positions $Loc \in \mathbb{R^{5 \times 3}}$, initial velocities $V \in \mathbb{R^{5 \times 3}}$ or $V \in \mathbb{R^{5 \times 2 \times 3}}$, adjacency matrices representing particle interactions $E \in \{ 1, 0\}^{2 \times 20}$ or $E \in \{ 1, 0\}^{5 \times 5}$(TODO which one is this correct? I get the first one when I debug the vectors in the preprocess function in clifford_embedding.py), and charge values $C \in \{ +1, -0\}^{5}$. Our model aims to predict the positions of particles after a certain time interval based on their initial states and interactions.
 
 
-### 4.2 Experimental setup
+### 4.2 Experimental Setup
 
-#### 4.2.1 Data Preparation (TODO COEN: a lot is redundant remove unnecesary info)
-The dataset used for this study is instantiated through the NBodyDataset class, designed to handle specific partitions of the dataset (train, valid, and test). Each instance of the dataset is initialized with parameters including the data partition type, the root directory of the data, a suffix identifying specific datasets, and a maximum number of samples to load.
+#### 4.2.1 Data Preparation 
 
-During initialization, the load method is invoked to read the necessary .npy files containing locations (loc), velocities (vel), edges, and charges from the specified directory. Following data loading, the preprocess method converts these numpy arrays into PyTorch tensors and adjusts their dimensions to match the expected input format for the model. This step includes generating edge attributes through the get_edges function. Additionally, if a sample limit is set, the limit_samples method restricts the data to the specified number of samples.
+The dataset for this study is managed using the NBodyDataset class, which handles train, validation, and test partitions. Each instance is initialized with parameters such as partition type, root directory, dataset suffix, and a maximum sample limit.
 
-For efficient data handling during training and validation, the NBody class is employed to initialize datasets for training, validation, and testing. Instances of the NBodyDataset class are created for each data partition. Subsequently, data loaders are prepared using PyTorch’s DataLoader with specified batch sizes and shuffling options, ensuring efficient batching and data access patterns during model training and evaluation.
+The load method reads .npy files for locations, velocities, edges, and charges. The preprocess method converts these arrays into PyTorch tensors, adjusts their dimensions, and generates edge attributes using the get_edges function. If a sample limit is set, the limit_samples method applies it.
 
-#### 4.2.2 Hyperparameter Tuning (TODO COEN: Think this can be reduced and moved to appendix)
- Hyperparameter optimization was conducted using Optuna, a framework for automated hyperparameter tuning. The objective was to minimize the model's validation loss. This testing was done for each of the three models separately. The hyperparameters and their search ranges include:
- 
+For training and validation, the NBody class initializes datasets for each partition, and PyTorch’s DataLoader prepares data loaders with specified batch sizes and shuffling options, ensuring efficient batching and data access during training and evaluation.
 
-- **Dimension of model embeddings (d_model)**: Evaluated at 16, 32, 64, and 128.
-- **Number of attention heads (num_heads)**: Tested with 4, 8, and 16 heads.
-- **Number of layers (num_layers)**: Varied from 1 to 8 layers.
-- **Learning rate (lr)**: Explored on a logarithmic scale from 1e-5 to 1e-3.
-- **Batch size (batch_size)**: Options included 50, 100, 150, and 200.
-- **Weight decay (wd)**: Investigated on a logarithmic scale from 1e-6 to 1e-2.
+#### 4.2.2 Training 
+The training process began with initializing the NBodyTransformer models, each configured with hyperparameters determined through prior hyperparameter search. The dataset was divided into training, validation, and test sets, ensuring appropriate data access for each phase.
 
-The testing was conducted using 1000 data samples, 50 epochs per trial.
-The hyperparameter optimization was executed over 100 trials. Each trial represented a unique combination of hyperparameters, and the best set of hyperparameters was determined based on the lowest validation loss achieved, for specific results see our Appendix.
+During training, models processed batches of training data through forward passes to generate predictions. The Mean Squared Error (MSE) loss function quantified the discrepancy between predicted and true values.
 
+After calculating the loss, backpropagation computed gradients, indicating the adjustments needed for model parameters. The Adam optimizer, chosen for its adaptive learning rate, updated the parameters. Gradient clipping was applied to prevent exploding gradients, ensuring stable updates. A cosine annealing learning rate scheduler adjusted the learning rate dynamically, aiding in fine-tuning the model parameters for better convergence.
 
-#### 4.2.3 Training (TODO COEN: reduced by al lot, maybe do optimizers and Loss function in table but no more)
-The training process commenced with the initialization of the NBodyTransformer models, where each model was configured with a set of hyperparameters determined through a preceding optimization phase. The models were trained using a dataset partitioned into training, validation, and test sets, ensuring that each phase had access to appropriate data for learning and evaluation.
+Early stopping was implemented to monitor validation performance and halt training if validation loss did not improve over a specified number of epochs (default 50), preventing overfitting and preserving the best model state.
 
-During the training phase, the models processed batches of training data through a forward pass to generate predictions. The discrepancy between the predicted values and the true values was quantified using the Mean Squared Error (MSE) loss function. This loss function was chosen for its effectiveness in regression tasks, which aligns with the objective of the NBodyTransformer models.
+The training spanned multiple epochs (default 1000), iteratively updating model parameters using a subset of training dataset (default 3000 samples). This iterative process allowed models to progressively improve predictions by minimizing the loss function. The model with the best validation loss was saved and used for testing.
 
-Following the loss calculation, the models underwent a backward pass where gradients were computed via backpropagation. These gradients indicated the direction and magnitude of adjustments needed for the model parameters. The optimizer, specifically the Adam optimizer, updated the model parameters accordingly. The Adam optimizer was selected for its adaptive learning rate capabilities, which enhance the training efficiency and convergence speed.
+#### 4.2.3 Evaluation 
 
-To prevent issues related to exploding gradients, gradient clipping was applied during the training process. This technique constrains the gradients within a specified range, ensuring stable updates and preventing numerical instabilities. Additionally, a cosine annealing learning rate scheduler dynamically adjusted the learning rate throughout the training epochs. This scheduler gradually reduced the learning rate, which helps in fine-tuning the model parameters and achieving better convergence.
+The evaluation of the NBodyTransformer models involved several key steps to ensure a thorough and accurate assessment.
 
-An essential component of the training process was the implementation of early stopping. Early stopping monitors the model's performance on the validation set and halts training if the validation loss does not improve over a specified number of epochs (default 50), known as the patience parameter. This mechanism prevents overfitting by stopping the training when the model starts to perform poorly on unseen data, thereby preserving the model state that achieved the best validation performance. 
+Equivariance testing was conducted by applying known transformations to the input data and verifying that the model's output transformations matched expectations. This process confirmed the model’s ability to maintain consistent predictions under geometric transformations.
 
-The training process was iterative, spanning multiple epochs (default 1000). In each epoch, the entire training dataset was utilized to update the model parameters. The iterative nature of the training allowed the models to progressively improve their predictions by learning from the data and minimizing the loss function. The use of early stopping ensured that the models did not continue to train beyond the point of optimal performance on the validation set, thus maintaining generalization capabilities. The model with the best validation loss during training was saved and utilized for testing.
+The primary task of the NBodyTransformer is to predict future positions of nodes in an N-body system. The model generates these predictions by adding the output displacements to the initial positions.
 
+Performance was evaluated using the Mean Squared Error (MSE) metric on both validation and test datasets, providing a measure of the average squared difference between predicted and actual positions. During training, validation loss was monitored to prevent overfitting, and the best-performing model parameters were saved.
 
-#### 4.2.4 Evaluation (TODO COEN: remove unnecesary info)
-
-The evaluation of the NBodyTransformer models involved several steps to ensure a thorough and accurate assessment of their performance. This section outlines the key components of the evaluation process.
-
-Equivariance testing was performed to assess the model's ability to maintain consistent predictions under transformations of the input data. This involves applying known transformations to the input and verifying that the output transformations are as expected. Equivariance is crucial for models in physical simulations as it ensures that the predictions respect the symmetries inherent in the physical system.
-
-The primary task of the NBodyTransformer model is to predict the future positions of nodes in an n-body system. The model generates these predictions by adding the output displacements to the initial positions of the nodes. This approach ensures that the model's predictions are grounded in the initial state of the system, allowing for accurate forecasting of future states.
-
-The performance of the model was evaluated using the Mean Squared Error (MSE) metric on both the validation and test datasets. MSE provides a measure of the average squared difference between the predicted and actual positions, offering a clear indication of the model's accuracy. During training, the validation loss was continuously monitored to prevent overfitting. The model parameters that resulted in the lowest validation loss were saved as the best-performing configuration.
-
-To further validate the model's generalization capabilities, the saved best model was evaluated on the test dataset. This final evaluation provided an unbiased assessment of the model's performance on unseen data, ensuring that the model's predictive accuracy extends beyond the training and validation datasets.
+To validate generalization, the saved best model was evaluated on the test dataset, ensuring predictive accuracy extends beyond the training and validation datasets.
 
 ## Results
-
-
-### Baseline Comparison
-
-% Waiting on final results from Snellius
-
-### Results Ablation Study
 
 To evaluate the performance of our Geometric Algebra Simplicial Transformer (GAST) model, we applied it to a three-dimensional N-body problem dataset, a fundamental challenge in physics that involves predicting the motions of particles interacting due to their charges, velocities, and locations in 3D space. We compared three different models: the Node Only Model, the Normal Standard Model, and the Model with Edges as Zeros. Each model was assessed based on its test loss to determine its accuracy and effectiveness in capturing the complex interactions within the dataset. The test losses for each model are summarized in Table 1. (TODO COEN: Table -> nice graph?)
 
@@ -349,28 +356,30 @@ The findings from our study underscore the critical role of edge information in 
 
 ## Conclusion
 
-% Waiting on final results from Snellius to finish
-
 The findings from our study highlight the critical role of edge information in enhancing the performance of models predicting interactions in complex datasets. The Geometric Algebra Simplicial Transformer (GAST) model, particularly when configured with edges initialized as zeros, demonstrated the highest accuracy, achieving a test loss of 0.0061. This approach allows the model to learn significant interactions from scratch, reducing overfitting and improving generalization. Overall, our results underscore the importance of incorporating and effectively handling edge information to advance predictive accuracy in N-body problems.
 
 
 
+### Evaluation 
 
-### Evaluation (TODO COEN: first 2 points even needed here? what is the point made in the 3rd point?)
-The evaluation of our Geometric Algebra Simplicial Transformer (GAST) model involved a comprehensive assessment of its performance across various configurations and hyperparameter settings. Despite the promising results, several areas for improvement were identified throughout the project. One key point of criticism is the need for a broader and more systematic hyperparameter search. While our initial search covered a range of values, expanding this search space could uncover more optimal configurations that further enhance model performance.
+One key area of improvement is the need for a broader and more systematic hyperparameter search. While our initial search covered a range of values, expanding this search space could reveal more optimal configurations to enhance model performance further.
 
-Additionally, the complexity of the model and the intricacies of implementing geometric algebra operations posed significant challenges. These challenges sometimes led to increased computational overhead and longer training times. Simplifying certain aspects of the implementation or optimizing the geometric product calculations could mitigate these issues and improve the model's efficiency.
+Another point of criticism is the necessity for evaluating the model on more diverse datasets and conducting more comprehensive model comparisons. This would provide a clearer picture of GAST's performance relative to other state-of-the-art methods.
 
-Moreover, while the GAST model demonstrated strong performance in capturing particle interactions, there were instances where it struggled with specific configurations or datasets. These limitations suggest that further refinement of the model's architecture, particularly in how it handles edge information and higher-order simplices, is necessary to ensure consistent and reliable performance across diverse scenarios. 
+The model's complexity and the intricacies of implementing geometric algebra operations posed significant challenges, often leading to increased computational overhead and longer training times. Simplifying certain aspects of the implementation or optimizing the geometric product calculations could mitigate these issues, improving the model's efficiency. Additionally, a detailed analysis of the model's time and space complexity is needed to validate its scalability and practicality for large-scale applications.
 
-(TODO COEN: add that embedding scalars and mv could be nice, if the results say so)
-  
+
+
+
 ### Future Work 
-Future work will focus on several key enhancements to further refine the GAST model. One avenue of improvement is the separation of scalar and multivector components, which could provide a clearer representation of geometric relationships. Additionally, incorporating force as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This addition could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system. By integrating these improvements, we aim to enhance the expressivity and predictive power of the GAST model. (TODO COEN: adding info in edge, only while removing charge info in nodes!)
 
-Furthermore, exploring more advanced and diverse hyperparameter optimization techniques could lead to better model configurations and improved performance. Techniques such as Bayesian optimization or reinforcement learning-based hyperparameter tuning might offer more efficient and effective ways to search the hyperparameter space.
+Future work will focus on several key enhancements to further refine the GAST model. A main avenue of improvement is the separation of scalar and multivector components. The multivectors are treated as is in the model now, while an MLP can be used on the scalars. This keeps the model equivariant and will increase the expressivity of the model, as an MLP introduces more complexity than the MVlinear.
+
+Besides that, incorporating charge as an edge attribute is a promising strategy to enrich the model's ability to capture the dynamics of particle interactions. This charge information would then be removed from the node embeddings. This change could lead to more nuanced predictions and a deeper understanding of the forces at play within the N-body system when it comes to simplices.
 
 Finally, expanding the scope of the model's applications beyond the N-body problem to other complex physical systems or higher-dimensional datasets could demonstrate the generalizability and robustness of the GAST model. By addressing these areas, we hope to push the boundaries of geometric deep learning and its applications in scientific computing.
+
+
 
 ## References
 
