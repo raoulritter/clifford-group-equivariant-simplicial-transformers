@@ -48,13 +48,14 @@ def parse_arguments():
     parser.add_argument('--num_edges', type=int, choices=[0, 10, 20], default=10, help='Number of edges')
     parser.add_argument('--weight_decay', type=float, default=0.00001, help='Weight decay')
     parser.add_argument('--early_stopping_limit', type=int, default=50, help='Early stopping limit')
-    parser.add_argument('--zero_edges', action='store_true', help='Flag to indicate zero edges')
+    parser.add_argument('--empty_edges', action='store_true', help='Flag to indicate zero edges')
     parser.add_argument('--test_only', action='store_true', help='Flag to indicate find test loss')
+    parser.add_argument('--triangles', action='store_true', help='Flag to indicate triangles') # CHANGED COEN
     return parser.parse_args()
 
 
 def save_losses_to_csv(args, train_losses, val_losses, test_loss, filename='losses.csv'):
-    filename = f'../../results/{args.num_edges}_{args.zero_edges}_{filename}'
+    filename = f'../../results/{args.num_edges}_{args.empty_edges}_{filename}'
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Hyperparameters'])
@@ -88,9 +89,10 @@ def main():
             num_layers=args.num_layers,
             clifford_algebra=CliffordAlgebra([1, 1, 1]),
             num_edges=args.num_edges,
-            zero_edges=args.zero_edges
+            empty_edges=args.empty_edges,
+            triangles=args.triangles
         )
-        model.load_state_dict(torch.load(f'../../results/trained_models/{args.num_edges}_{args.zero_edges}_best_model.pth'))
+        model.load_state_dict(torch.load(f'../../results/trained_models/{args.num_edges}_{args.empty_edges}_best_model.pth'))
         nbody_data = NBody(num_samples=args.num_samples, batch_size=args.batch_size)
         test_loader = nbody_data.test_loader()
         criterion = nn.MSELoss()
@@ -109,7 +111,8 @@ def main():
         num_layers=args.num_layers,
         clifford_algebra=clifford_algebra,
         num_edges=args.num_edges,
-        zero_edges=args.zero_edges
+        empty_edges=args.empty_edges,
+        triangles=args.triangles
     )
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -140,7 +143,7 @@ def main():
         # Save nbody_model if validation loss improved
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), f'./{args.num_edges}_{args.zero_edges}_best_model.pth')
+            torch.save(model.state_dict(), f'./{args.num_edges}_{args.empty_edges}_best_model.pth')
             early_stopping_counter = 0
         else:
             early_stopping_counter += 1
@@ -153,7 +156,7 @@ def main():
         print(f'Epoch {epoch + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss}')
 
     # Load the best nbody_model and test it
-    model.load_state_dict(torch.load(f'./{args.num_edges}_{args.zero_edges}_best_model.pth'))
+    model.load_state_dict(torch.load(f'./{args.num_edges}_{args.empty_edges}_best_model.pth'))
     test_loss = test_model(model, test_loader, criterion)
     print(f'Test Loss: {test_loss}')
     # Save the training and validation losses to a CSV file

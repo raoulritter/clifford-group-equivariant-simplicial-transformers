@@ -2,26 +2,46 @@ import torch
 from ..original_modules.linear import MVLinear
 
 class NBodyGraphEmbedder:
-    def __init__(self, clifford_algebra, in_features, embed_dim, num_edges=10, zero_edges=True):
+    def __init__(self, clifford_algebra, in_features, embed_dim, num_edges=10, empty_edges=True, triangles=False):
         self.clifford_algebra = clifford_algebra
         self.node_projection = MVLinear(
             self.clifford_algebra, in_features, embed_dim, subspaces=False
         )
         self.edge_projection = MVLinear(
-            self.clifford_algebra, 7, embed_dim, subspaces=False
+            self.clifford_algebra, 3, embed_dim, subspaces=False
         )
+
+        self.edge_attr_projection = MVLinear(
+            self.clifford_algebra, embed_dim, embed_dim, subspaces=False
+        )
+
+        self.edge_attr_left = MVLinear(
+            self.clifford_algebra, embed_dim, embed_dim, subspaces=False
+        )
+
         self.embed_dim = embed_dim
-        self.zero_edges = zero_edges
+        self.empty_edges = empty_edges
         self.num_edges = num_edges
-        if num_edges == 10:
-            self.unique_edges = True
+        self.triangles = triangles
+
+        # TODO: dont hardcode this
+        self.num_nodes = 5
+        self.num_triangles = self.num_nodes * (self.num_nodes - 1) * (self.num_nodes - 2) // 6
+
+        # check if graph has undirected edges, assumes fully connected graph
+        num_unidirected_edges = num_edges * (num_edges - 1) // 2
+        num_directed_edges = num_edges * (num_edges - 1)
+
+        # TODO future: add for some edges so not fully connected
+        if num_edges == num_unidirected_edges:
+            self.undirected_edges = True
             self.with_edges = True
-        elif num_edges == 20:
-            self.unique_edges = False
+        elif num_edges == num_directed_edges:
+            self.undirected_edges = False
             self.with_edges = True
         else:
             assert num_edges == 0
-            self.unique_edges = False
+            self.undirected_edges = False
             self.with_edges = False
 
     def embed_nbody_graphs(self, batch):
@@ -36,24 +56,93 @@ class NBodyGraphEmbedder:
         batch_size, n_nodes, _ = batch[0].size()
         if self.with_edges:
             full_edge_embedding, edges = self.get_full_edge_embedding(edge_attr, nodes_stack, edges, n_nodes, batch_size)
-            attention_mask = self.get_attention_mask(batch_size, n_nodes, edges)
+            attention_mask = self.get_attention_mask(batch_size, n_nodes, edges, None)
             full_embedding = torch.cat((full_node_embedding.reshape(batch_size, n_nodes, self.embed_dim, 8),
                                         full_edge_embedding.reshape(batch_size, self.num_edges, self.embed_dim, 8)),
                                        dim=1)
             return full_embedding, attention_mask
-        else:
-            return full_node_embedding, None
+        
+        if self.triangles:
+            full_edge_embedding, edges = self.get_full_edge_embedding(edge_attr, nodes_stack, edges, n_nodes, batch_size)
+            full_triangle_embedding, triangles = self.get_full_triangle_embedding(full_edge_embedding, nodes_stack, edges, n_nodes, batch_size)
+            attention_mask = self.get_attention_mask(batch_size, n_nodes, edges, triangles)
+            full_embedding = torch.cat((full_node_embedding.reshape(batch_size, n_nodes, self.embed_dim, 8),
+                                        full_edge_embedding.reshape(batch_size, self.num_edges, self.embed_dim, 8),
+                                        full_triangle_embedding.reshape(batch_size, self.num_triangles, self.embed_dim, 8)),
+                                       dim=1)
+            #TODO: CHECK IF THE TRIANGLE CONCAT MAKES SHAPES FUCK UP
+            return full_embedding, attention_mask
+        
+        return full_node_embedding, None
 
 
+    #TODO: complete and test this function
+    def get_full_triangle_embedding(self, edge_embeddings, nodes_stack, edges, n_nodes, batch_size):
+        # Initialize a list to store the triangle embeddings and a set to store unique triangles
+        triangle_embeddings = []
+        unique_triangles = set()
+
+        # Iterate over each batch
+        for batch_index in range(batch_size):
+            for i in range(n_nodes):
+                for j in range(n_nodes):
+                    if i != j:
+                        # Find all edges connected to node i and node j
+                        edges_i = edges[batch_index][i]
+                        edges_j = edges[batch_index][j]
+                        
+                        # Find common neighbors of node i and node j
+                        common_neighbors = set(edges_i).intersection(edges_j)
+
+                        for k in common_neighbors:
+                            if k != i and k != j:
+                                # Nodes i, j, k form a triangle
+                                # Standardize the triangle by sorting the nodes
+                                triangle_nodes = tuple(sorted([i, j, k]))
+
+                                # Check if the triangle is already processed
+                                if triangle_nodes not in unique_triangles:
+                                    unique_triangles.add(triangle_nodes)
+
+                                    # Get the embeddings
+                                    node_i_embedding = nodes_stack[batch_index, triangle_nodes[0]]
+                                    node_j_embedding = nodes_stack[batch_index, triangle_nodes[1]]
+                                    node_k_embedding = nodes_stack[batch_index, triangle_nodes[2]]
+                                    
+                                    edge_ij_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[0], triangle_nodes[1]))]
+                                    edge_jk_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[1], triangle_nodes[2]))]
+                                    edge_ki_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[2], triangle_nodes[0]))]
+                                    
+                                    # Compute node times edge and edge times node products using geometric_product
+                                    triangle_embedding_1a = self.clifford_algebra.geometric_product(node_i_embedding, edge_jk_embedding)
+                                    triangle_embedding_1b = self.clifford_algebra.geometric_product(edge_jk_embedding, node_i_embedding)
+
+                                    triangle_embedding_2a = self.clifford_algebra.geometric_product(node_j_embedding, edge_ki_embedding)
+                                    triangle_embedding_2b = self.clifford_algebra.geometric_product(edge_ki_embedding, node_j_embedding)
+
+                                    triangle_embedding_3a = self.clifford_algebra.geometric_product(node_k_embedding, edge_ij_embedding)
+                                    triangle_embedding_3b = self.clifford_algebra.geometric_product(edge_ij_embedding, node_k_embedding)
+                                    
+                                    # Combine the embeddings
+                                    combined_triangle_embedding = (triangle_embedding_1a + triangle_embedding_1b +
+                                                                triangle_embedding_2a + triangle_embedding_2b +
+                                                                triangle_embedding_3a + triangle_embedding_3b)
+                                    
+                                    triangle_embeddings.append(combined_triangle_embedding)
+            
+        # Convert the list of triangle embeddings to a tensor
+        full_triangle_embedding = torch.stack(triangle_embeddings)
+
+        return full_triangle_embedding, list(unique_triangles)
 
     def get_full_edge_embedding(self,edge_attr, nodes_stack, edges, n_nodes, batch_size):
         edges, indices = self.get_edge_nodes(edges, n_nodes, batch_size)
         start_nodes = edges[0]
         end_nodes = edges[1]
-        if self.zero_edges:
+        if self.empty_edges:
             return torch.zeros((batch_size, self.num_edges, self.embed_dim,8)), (start_nodes, end_nodes)
         else:
-            if self.unique_edges:
+            if self.undirected_edges:
                 edge_attr = edge_attr[:, indices, :]
             full_edge_embedding = self.get_edge_embedding(edge_attr, nodes_stack, (start_nodes, end_nodes))
             return full_edge_embedding, (start_nodes, end_nodes)
@@ -74,8 +163,8 @@ class NBodyGraphEmbedder:
     def get_edge_nodes(self, edges, n_nodes, batch_size):
         batch_index = torch.arange(batch_size, device=edges.device)
         edges = edges + n_nodes * batch_index[:, None, None]
-        if self.unique_edges:
-            edges, indices = self.get_unique_edges_with_indices(edges[0])
+        if self.undirected_edges:
+            edges, indices = self.get_undirected_edges_with_indices(edges[0])
             edges = edges.unsqueeze(0).repeat(batch_size, 1, 1)
             edges = tuple(edges.transpose(0, 1).flatten(1))
             return edges, indices
@@ -83,49 +172,47 @@ class NBodyGraphEmbedder:
             return tuple(edges.transpose(0, 1).flatten(1)), None
 
     def get_edge_embedding(self, edge_attr, nodes_in_clifford, edges):
-        if self.unique_edges:
-            orig_edge_attr_clifford = self.clifford_algebra.embed(edge_attr[..., None], (0,)).view(-1, 1, 8)
-        else:
-            edge_attr = self.flatten_tensors(edge_attr)[0]  # [batch * edges, dim]
-            orig_edge_attr_clifford = self.clifford_algebra.embed(edge_attr[..., None], (0,))
-
-        extra_edge_attr_clifford = self.make_edge_attr(nodes_in_clifford, edges)
-        edge_attr_all = torch.cat((orig_edge_attr_clifford, extra_edge_attr_clifford), dim=1)
-
-        projected_edges = self.edge_projection(edge_attr_all)
+        edge_attr = self.make_edge_attr(nodes_in_clifford, edges) 
+        projected_edges = self.edge_projection(edge_attr)
         return projected_edges
 
     def make_edge_attr(self, node_features, edges):
         node1_features = node_features[edges[0]]
         node2_features = node_features[edges[1]]
-        gp = self.clifford_algebra.geometric_product(node1_features, node2_features)
-        gp2 = self.clifford_algebra.geometric_product(node2_features, node1_features)
-        gp += gp2
-        edge_attributes = torch.cat((node1_features + node2_features,gp), dim=1) # changed
+        edge_attr = node1_features + node2_features
+        edge_attr = self.edge_attr_projection(edge_attr)
+        edge_attr_left = self.edge_attr_left(edge_attr)
+        edge_attributes = self.clifford_algebra.geometric_product(edge_attr_left, edge_attr)
         return edge_attributes
 
-    def get_unique_edges_with_indices(self, tensor):
+    def get_undirected_edges_with_indices(self, tensor):
         edges = set()  # edges before
-        unique_edges = []
+        undirected_edges = []
         unique_indices = []
 
         for i, edge in enumerate(tensor.t()):
             node1, node2 = sorted(edge.tolist())
             if (node1, node2) not in edges:
                 edges.add((node1, node2))
-                unique_edges.append((node1, node2))
+                undirected_edges.append((node1, node2))
                 unique_indices.append(i)
 
-        unique_edges_tensor = torch.tensor(unique_edges).t()
+        undirected_edges_tensor = torch.tensor(undirected_edges).t()
         unique_indices_tensor = torch.tensor(unique_indices)
 
-        return unique_edges_tensor, unique_indices_tensor
+        return undirected_edges_tensor, unique_indices_tensor
 
-    def get_attention_mask(self, batch_size, n_nodes, edges):
+    # TODO: test this function
+    def get_attention_mask(self, batch_size, n_nodes, edges, triangles):
         num_edges_per_graph = edges[0].size(0) // batch_size
 
+        if triangles is not None:
+            number_of_triangles = (n_nodes * (n_nodes - 1) * (n_nodes - 2)) // 6
+        else:
+            number_of_triangles = 0
+
         # Initialize an attention mask with zeros for a single batch
-        base_attention_mask = torch.zeros(1, n_nodes + num_edges_per_graph, n_nodes + num_edges_per_graph,
+        base_attention_mask = torch.zeros(1, n_nodes + num_edges_per_graph, n_nodes + num_edges_per_graph + number_of_triangles,
                                           device=edges[0].device)
 
         # Nodes can attend to themselves and to all other nodes within the same graph
@@ -146,6 +233,24 @@ class NBodyGraphEmbedder:
             base_attention_mask[0, start_node, edge_idx] = 1
             base_attention_mask[0, end_node, edge_idx] = 1
 
+        # Triangles can attend to all nodes in the graph
+        if triangles is not None:
+            for triangle_idx, triangle in enumerate(triangles):
+                triangle_offset = n_nodes + num_edges_per_graph
+                node1, node2, node3 = triangle
+                tri_idx = triangle_offset + triangle_idx
+
+                # Triangles can attend to their nodes
+                base_attention_mask[0, tri_idx, node1] = 1
+                base_attention_mask[0, tri_idx, node2] = 1
+                base_attention_mask[0, tri_idx, node3] = 1
+
+                # Nodes can attend to their corresponding triangles
+                base_attention_mask[0, node1, tri_idx] = 1
+                base_attention_mask[0, node2, tri_idx] = 1
+                base_attention_mask[0, node3, tri_idx] = 1
+        
+        #TODO: triangle to edge and edge to triangle??
 
         # Convert the mask to float and set masked positions to -inf and allowed positions to 0
         attention_mask = base_attention_mask.float()

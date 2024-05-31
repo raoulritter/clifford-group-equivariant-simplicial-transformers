@@ -19,14 +19,14 @@ class TwoLayerMLP(nn.Module):
 
 
 class NBodyTransformer(nn.Module):
-    def __init__(self, input_dim, d_model, num_heads, num_layers, clifford_algebra, num_edges=10, zero_edges=False):
+    def __init__(self, input_dim, d_model, num_heads, num_layers, clifford_algebra, num_edges=10, zero_edges=False, triangles=False):
         super().__init__()
         self.clifford_algebra = clifford_algebra
         self.num_edges = num_edges
         self.d_model = d_model
 
         # Initialize embedding and transformer layers
-        self.embedding_layer = NBodyGraphEmbedder(clifford_algebra, input_dim, d_model, num_edges, zero_edges)
+        self.embedding_layer = NBodyGraphEmbedder(clifford_algebra, input_dim, d_model, num_edges, zero_edges, triangles)
         self.transformer = MainBody(num_layers, d_model, num_heads, clifford_algebra, num_edges)
         self.combined_projection = TwoLayerMLP(clifford_algebra, d_model, d_model * 4, d_model)
         self.x_left = MVLinear(clifford_algebra, d_model, d_model, subspaces=True)
