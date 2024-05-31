@@ -457,11 +457,11 @@ The results are as follows:
 Best Hyperparameters: {`d_model`: $128$, `num_heads`: $4$, `num_layers`: $4$, `lr`: $0.00035$, `batch_size`: $50$, `wd`: $2.34e-06$}<br>
 Best Validation Loss: $0.0110$
 
-**Model with edges (10):**<br>
+**Model without edges (10):**<br>
 Best Hyperparameters: {`d_model`: $64$, `num_heads`: $4$, `num_layers`: $2$, `lr`: $0.00087$, `batch_size`: $50$, `wd`: $9.92e-06$}<br>
 Best Validation Loss: $0.0126$
 
-**Model with edges (10):**<br>
+**Model with edges as zeroes (10):**<br>
 Best Hyperparameters: {`d_model`: $128$, `num_heads`: $4$, `num_layers`: $2$, `lr`: $0.00068$, `batch_size`: $50$, `wd`: $7.04e-06$}<br>
 Best Validation Loss: $0.0107$
 
