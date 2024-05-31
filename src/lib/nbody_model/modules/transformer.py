@@ -17,17 +17,16 @@ class TwoLayerMLP(nn.Module):
     def forward(self, v):
         return self.layer(v)
 
-
 class NBodyTransformer(nn.Module):
-    def __init__(self, input_dim, d_model, num_heads, num_layers, clifford_algebra, num_edges=10, zero_edges=False, triangles=False):
+    def __init__(self, input_dim, d_model, num_heads, num_layers, clifford_algebra, simplex_order=1, empty_higher_simplices=False):
         super().__init__()
         self.clifford_algebra = clifford_algebra
-        self.num_edges = num_edges
+        self.simplex_order = simplex_order
         self.d_model = d_model
 
         # Initialize embedding and transformer layers
-        self.embedding_layer = NBodyGraphEmbedder(clifford_algebra, input_dim, d_model, num_edges, zero_edges, triangles)
-        self.transformer = MainBody(num_layers, d_model, num_heads, clifford_algebra, num_edges)
+        self.embedding_layer = NBodyGraphEmbedder(clifford_algebra, input_dim, d_model, simplex_order, empty_higher_simplices)
+        self.transformer = MainBody(num_layers, d_model, num_heads, clifford_algebra, simplex_order)
         self.combined_projection = TwoLayerMLP(clifford_algebra, d_model, d_model * 4, d_model)
         self.x_left = MVLinear(clifford_algebra, d_model, d_model, subspaces=True)
 
@@ -39,13 +38,13 @@ class NBodyTransformer(nn.Module):
         full_embeddings, attention_mask = self.embedding_layer.embed_nbody_graphs(batch)
 
         # Apply transformation to embeddings
-        src = self.combined_projection(full_embeddings.view(batch_size * (n_nodes + self.num_edges), self.d_model, 8))
+        src = self.combined_projection(full_embeddings.view(batch_size * (n_nodes + self.simplex_order), self.d_model, 8))
         #src_left = self.x_left(src)
         #src = self.clifford_algebra.geometric_product(src_left, src)
 
         # Pass through transformer layers
         output = self.transformer(src, attention_mask)
-        output = output.view(batch_size, n_nodes + self.num_edges, self.d_model, 8)
+        output = output.view(batch_size, n_nodes + self.simplex_order, self.d_model, 8)
 
         # Compute new positions
         output_locations = output[:, :n_nodes, 1, 1:4].squeeze(2)

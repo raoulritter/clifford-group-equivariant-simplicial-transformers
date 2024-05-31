@@ -2,7 +2,7 @@ import torch
 from ..original_modules.linear import MVLinear
 
 class NBodyGraphEmbedder:
-    def __init__(self, clifford_algebra, in_features, embed_dim, num_edges=10, empty_edges=True, triangles=False):
+    def __init__(self, clifford_algebra, in_features, embed_dim, simplex_order, empty_higher_simplices=True):
         self.clifford_algebra = clifford_algebra
         self.node_projection = MVLinear(
             self.clifford_algebra, in_features, embed_dim, subspaces=False
@@ -19,30 +19,22 @@ class NBodyGraphEmbedder:
             self.clifford_algebra, embed_dim, embed_dim, subspaces=False
         )
 
+        self.triangle_projection = MVLinear(
+            self.clifford_algebra, 3, embed_dim, subspaces=False
+        )
+        self.triangle_left = MVLinear(
+            self.clifford_algebra, 3, embed_dim, subspaces=False
+        )
+
         self.embed_dim = embed_dim
-        self.empty_edges = empty_edges
-        self.num_edges = num_edges
-        self.triangles = triangles
+        self.empty_simplices = empty_higher_simplices
 
-        # TODO: dont hardcode this
+        #TODO: add this as a parameter
         self.num_nodes = 5
+
+        self.num_edges = self.num_nodes * (self.num_nodes - 1) // 2
+        self.simplex_order = simplex_order
         self.num_triangles = self.num_nodes * (self.num_nodes - 1) * (self.num_nodes - 2) // 6
-
-        # check if graph has undirected edges, assumes fully connected graph
-        num_unidirected_edges = num_edges * (num_edges - 1) // 2
-        num_directed_edges = num_edges * (num_edges - 1)
-
-        # TODO future: add for some edges so not fully connected
-        if num_edges == num_unidirected_edges:
-            self.undirected_edges = True
-            self.with_edges = True
-        elif num_edges == num_directed_edges:
-            self.undirected_edges = False
-            self.with_edges = True
-        else:
-            assert num_edges == 0
-            self.undirected_edges = False
-            self.with_edges = False
 
     def embed_nbody_graphs(self, batch):
         loc_mean, vel, edge_attr, charges, edges = self.preprocess(batch)
@@ -54,7 +46,7 @@ class NBodyGraphEmbedder:
         # nodes_stack[:,1,0] += 1
         full_node_embedding = self.node_projection(nodes_stack)
         batch_size, n_nodes, _ = batch[0].size()
-        if self.with_edges:
+        if self.simplex_order == 1:
             full_edge_embedding, edges = self.get_full_edge_embedding(edge_attr, nodes_stack, edges, n_nodes, batch_size)
             attention_mask = self.get_attention_mask(batch_size, n_nodes, edges, None)
             full_embedding = torch.cat((full_node_embedding.reshape(batch_size, n_nodes, self.embed_dim, 8),
@@ -62,7 +54,7 @@ class NBodyGraphEmbedder:
                                        dim=1)
             return full_embedding, attention_mask
         
-        if self.triangles:
+        if self.simplex_order == 2:
             full_edge_embedding, edges = self.get_full_edge_embedding(edge_attr, nodes_stack, edges, n_nodes, batch_size)
             full_triangle_embedding, triangles = self.get_full_triangle_embedding(full_edge_embedding, nodes_stack, edges, n_nodes, batch_size)
             attention_mask = self.get_attention_mask(batch_size, n_nodes, edges, triangles)
@@ -113,25 +105,16 @@ class NBodyGraphEmbedder:
                                     edge_jk_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[1], triangle_nodes[2]))]
                                     edge_ki_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[2], triangle_nodes[0]))]
                                     
-                                    # Compute node times edge and edge times node products using geometric_product
-                                    triangle_embedding_1a = self.clifford_algebra.geometric_product(node_i_embedding, edge_jk_embedding)
-                                    triangle_embedding_1b = self.clifford_algebra.geometric_product(edge_jk_embedding, node_i_embedding)
-
-                                    triangle_embedding_2a = self.clifford_algebra.geometric_product(node_j_embedding, edge_ki_embedding)
-                                    triangle_embedding_2b = self.clifford_algebra.geometric_product(edge_ki_embedding, node_j_embedding)
-
-                                    triangle_embedding_3a = self.clifford_algebra.geometric_product(node_k_embedding, edge_ij_embedding)
-                                    triangle_embedding_3b = self.clifford_algebra.geometric_product(edge_ij_embedding, node_k_embedding)
-                                    
-                                    # Combine the embeddings
-                                    combined_triangle_embedding = (triangle_embedding_1a + triangle_embedding_1b +
-                                                                triangle_embedding_2a + triangle_embedding_2b +
-                                                                triangle_embedding_3a + triangle_embedding_3b)
+                                    # mean of all features
+                                    combined_triangle_embedding = (node_i_embedding + node_j_embedding + node_k_embedding + edge_ij_embedding + edge_jk_embedding + edge_ki_embedding) / 6
                                     
                                     triangle_embeddings.append(combined_triangle_embedding)
             
         # Convert the list of triangle embeddings to a tensor
         full_triangle_embedding = torch.stack(triangle_embeddings)
+        triangle_embeddings = self.triangle_projection(triangle_embeddings)
+        triangle_embeddings_left = self.triangle_left(triangle_embeddings)
+        full_triangle_embedding = self.clifford_algebra.geometric_product(triangle_embeddings_left, triangle_embeddings)
 
         return full_triangle_embedding, list(unique_triangles)
 
@@ -179,7 +162,7 @@ class NBodyGraphEmbedder:
     def make_edge_attr(self, node_features, edges):
         node1_features = node_features[edges[0]]
         node2_features = node_features[edges[1]]
-        edge_attr = node1_features + node2_features
+        edge_attr = (node1_features + node2_features) / 2
         edge_attr = self.edge_attr_projection(edge_attr)
         edge_attr_left = self.edge_attr_left(edge_attr)
         edge_attributes = self.clifford_algebra.geometric_product(edge_attr_left, edge_attr)
@@ -249,8 +232,19 @@ class NBodyGraphEmbedder:
                 base_attention_mask[0, node1, tri_idx] = 1
                 base_attention_mask[0, node2, tri_idx] = 1
                 base_attention_mask[0, node3, tri_idx] = 1
-        
-        #TODO: triangle to edge and edge to triangle??
+
+        # Triangles can attend to edges and edges can attend to triangles
+        edges_in_triangle = [
+            (node1, node2),
+            (node2, node3),
+            (node3, node1)
+        ]
+        for edge in edges_in_triangle:
+            edge_idx = n_nodes + edges[0].tolist().index(edge[0]) + edges[1].tolist().index(edge[1])
+            # Triangle to edge
+            base_attention_mask[0, tri_idx, edge_idx] = 1
+            # Edge to triangle
+            base_attention_mask[0, edge_idx, tri_idx] = 1
 
         # Convert the mask to float and set masked positions to -inf and allowed positions to 0
         attention_mask = base_attention_mask.float()

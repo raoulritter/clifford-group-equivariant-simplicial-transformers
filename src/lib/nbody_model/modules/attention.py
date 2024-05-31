@@ -9,11 +9,12 @@ from einops import rearrange
 
 
 class SelfAttentionClifford(nn.Module):
-    def __init__(self, num_feat, num_nodes, num_edges, algebra, num_heads=8):
+    def __init__(self, num_feat, num_nodes, num_edges, num_triangles, algebra, num_heads=8):
         super(SelfAttentionClifford, self).__init__()
         self.num_feat = num_feat
         self.num_nodes = num_nodes
         self.num_edges = num_edges
+        self.num_triangles = num_triangles
         self.algebra = algebra
         self.num_heads = num_heads
         self.head_dim = num_feat // num_heads
@@ -23,8 +24,8 @@ class SelfAttentionClifford(nn.Module):
         self.output_embedding = MVLinear(algebra, self.head_dim * self.num_heads, num_feat, subspaces=True)
 
     def forward(self, feature_matrix, attention_mask, test=False):
-        bs = feature_matrix.size(0) // (self.num_nodes + self.num_edges)
-        n = self.num_nodes + self.num_edges
+        bs = feature_matrix.size(0) // (self.num_nodes + self.num_edges, self.num_triangles)
+        n = self.num_nodes + self.num_edges + self.num_triangles
 
         # Compute query, key, and value using mv linear layers
         q = self.q_linear(feature_matrix)  # q -> [batch_size, n_nodes + n_edges, num_heads, d_model//num_heads 8]

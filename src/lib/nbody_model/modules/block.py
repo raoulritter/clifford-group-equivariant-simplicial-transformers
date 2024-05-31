@@ -24,12 +24,25 @@ class GpLayer(nn.Module):
         return x
 
 class TransformerBlock(nn.Module):
-    def __init__(self, d_model, num_heads, clifford_algebra, num_edges=20):
+    def __init__(self, d_model, num_heads, clifford_algebra, simplex_order=1):
         super(TransformerBlock, self).__init__()
+
+        #TODO: n_nodes should be a parameter
+        self.n_nodes = 5
+        self.simplex_order = simplex_order
+
+        # NOTE THAT THIS WAS 20 in the code that we have and now it is 10
+        self.n_edges = 0
+        if self.simplex_order >= 1:
+            self.n_edges = self.n_nodes*(self.n_nodes-1)//2
+
+        self.n_triangles = 0
+        if self.simplex_order >= 2:
+            self.n_triangles = self.n_nodes*(self.n_nodes-1)*(self.n_nodes-2)//6
 
         self.algebra = clifford_algebra
         self.mvlayernorm1 = MVLayerNorm(clifford_algebra, d_model)
-        self.self_attn = SelfAttentionClifford(d_model, 5, num_edges, clifford_algebra, num_heads)
+        self.self_attn = SelfAttentionClifford(d_model, 5, self.n_edges, self.n_triangles, clifford_algebra, num_heads)
         self.mvlayernorm2 = MVLayerNorm(clifford_algebra, d_model)
         self.mvlayernorm3 = MVLayerNorm(clifford_algebra, d_model)
         self.mlp = nn.Sequential(
@@ -66,10 +79,10 @@ class TransformerBlock(nn.Module):
 
 
 class MainBody(nn.Module):
-    def __init__(self, num_layers, d_model, num_heads, clifford_algebra, num_edges=20):
+    def __init__(self, num_layers, d_model, num_heads, clifford_algebra, simplex_order=1):
         super(MainBody, self).__init__()
         self.layers = nn.ModuleList(
-            [TransformerBlock(d_model, num_heads, clifford_algebra, num_edges=num_edges) for _ in range(num_layers)])
+            [TransformerBlock(d_model, num_heads, clifford_algebra, simplex_order=simplex_order) for _ in range(num_layers)])
 
     def forward(self, src, src_mask=None):
         for layer in self.layers:
