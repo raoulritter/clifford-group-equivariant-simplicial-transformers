@@ -18,4 +18,4 @@ source activate cgest_env
 
 cd ..
 
-srun python main.py
+srun python lib/main.py
