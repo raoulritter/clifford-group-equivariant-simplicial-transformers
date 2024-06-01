@@ -67,24 +67,35 @@ class NBodyGraphEmbedder:
         
         return full_node_embedding, None
 
-
     #TODO: complete and test this function
     def get_full_triangle_embedding(self, edge_embeddings, nodes_stack, edges, n_nodes, batch_size):
         # Initialize a list to store the triangle embeddings and a set to store unique triangles
         triangle_embeddings = []
-        unique_triangles = set()
 
         # Iterate over each batch
         for batch_index in range(batch_size):
+            unique_triangles = set()
+
+            # Convert the edges into a dictionary for fast lookup
+            edge_dict = {}
+            for idx, (u, v) in enumerate(zip(edges[0], edges[1])):
+                if u in edge_dict:
+                    edge_dict[u].add((v, idx))
+                else:
+                    edge_dict[u] = {(v, idx)}
+                if v in edge_dict:
+                    edge_dict[v].add((u, idx))
+                else:
+                    edge_dict[v] = {(u, idx)}
+
+            # Iterate over each node pair (i, j)
             for i in range(n_nodes):
-                for j in range(n_nodes):
-                    if i != j:
-                        # Find all edges connected to node i and node j
-                        edges_i = edges[batch_index][i]
-                        edges_j = edges[batch_index][j]
-                        
-                        # Find common neighbors of node i and node j
-                        common_neighbors = set(edges_i).intersection(edges_j)
+                for j in range(i + 1, n_nodes):
+                    # Find common neighbors of node i and node j
+                    if i in edge_dict and j in edge_dict:
+                        common_neighbors = {neighbor for neighbor, _ in edge_dict[i]}.intersection(
+                            {neighbor for neighbor, _ in edge_dict[j]}
+                        )
 
                         for k in common_neighbors:
                             if k != i and k != j:
@@ -100,21 +111,27 @@ class NBodyGraphEmbedder:
                                     node_i_embedding = nodes_stack[batch_index, triangle_nodes[0]]
                                     node_j_embedding = nodes_stack[batch_index, triangle_nodes[1]]
                                     node_k_embedding = nodes_stack[batch_index, triangle_nodes[2]]
-                                    
-                                    edge_ij_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[0], triangle_nodes[1]))]
-                                    edge_jk_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[1], triangle_nodes[2]))]
-                                    edge_ki_embedding = edge_embeddings[batch_index, edges[batch_index].index((triangle_nodes[2], triangle_nodes[0]))]
-                                    
-                                    # mean of all features
-                                    combined_triangle_embedding = (node_i_embedding + node_j_embedding + node_k_embedding + edge_ij_embedding + edge_jk_embedding + edge_ki_embedding) / 6
-                                    
+
+                                    edge_ij_idx = next(idx for neighbor, idx in edge_dict[i] if neighbor == j)
+                                    edge_jk_idx = next(idx for neighbor, idx in edge_dict[j] if neighbor == k)
+                                    edge_ki_idx = next(idx for neighbor, idx in edge_dict[k] if neighbor == i)
+
+                                    edge_ij_embedding = edge_embeddings[batch_index, edge_ij_idx]
+                                    edge_jk_embedding = edge_embeddings[batch_index, edge_jk_idx]
+                                    edge_ki_embedding = edge_embeddings[batch_index, edge_ki_idx]
+
+                                    # Mean of all features
+                                    combined_triangle_embedding = (node_i_embedding + node_j_embedding + node_k_embedding +
+                                                                   edge_ij_embedding + edge_jk_embedding + edge_ki_embedding) / 6
+
                                     triangle_embeddings.append(combined_triangle_embedding)
-            
-        # Convert the list of triangle embeddings to a tensor
+
         full_triangle_embedding = torch.stack(triangle_embeddings)
-        triangle_embeddings = self.triangle_projection(triangle_embeddings)
+        triangle_embeddings = self.triangle_projection(full_triangle_embedding)
         triangle_embeddings_left = self.triangle_left(triangle_embeddings)
         full_triangle_embedding = self.clifford_algebra.geometric_product(triangle_embeddings_left, triangle_embeddings)
+
+        full_triangle_embedding = full_triangle_embedding.view(batch_size, -1, 3, 8)
 
         return full_triangle_embedding, list(unique_triangles)
 
