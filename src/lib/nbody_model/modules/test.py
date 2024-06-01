@@ -50,10 +50,9 @@ class MockModel:
                                 if triangle_nodes not in unique_triangles:
                                     unique_triangles.add(triangle_nodes)
 
-                                    # Get the embeddings
-                                    node_i_embedding = nodes_stack[batch_index, triangle_nodes[0]]
-                                    node_j_embedding = nodes_stack[batch_index, triangle_nodes[1]]
-                                    node_k_embedding = nodes_stack[batch_index, triangle_nodes[2]]
+                                    # node_i_embedding = nodes_stack[batch_index, triangle_nodes[0]]
+                                    # node_j_embedding = nodes_stack[batch_index, triangle_nodes[1]]
+                                    # node_k_embedding = nodes_stack[batch_index, triangle_nodes[2]]
 
                                     edge_ij_idx = next(idx for neighbor, idx in edge_dict[i] if neighbor == j)
                                     edge_jk_idx = next(idx for neighbor, idx in edge_dict[j] if neighbor == k)
@@ -64,8 +63,7 @@ class MockModel:
                                     edge_ki_embedding = edge_embeddings[batch_index, edge_ki_idx]
 
                                     # Mean of all features
-                                    combined_triangle_embedding = (node_i_embedding + node_j_embedding + node_k_embedding +
-                                                                   edge_ij_embedding + edge_jk_embedding + edge_ki_embedding) / 6
+                                    combined_triangle_embedding = (edge_ij_embedding + edge_jk_embedding + edge_ki_embedding) / 3
 
                                     triangle_embeddings.append(combined_triangle_embedding)
 
