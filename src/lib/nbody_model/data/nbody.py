@@ -31,7 +31,7 @@ def get_edges(adjacency_matrices):
 
 
 class NBodyDataset:
-    def __init__(self, partition, data_root = os.environ["DATAROOT"], suffix='_charged5_initvel1small', max_samples=1000):
+    def __init__(self, partition, data_root = "./nbody_dataset/, suffix='_charged5_initvel1small', max_samples=1000):
 
         self.suffix = suffix  # '_charged5_initvel1small'
         self.data_root = data_root  # 'nbody_dataset/'
